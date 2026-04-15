@@ -65,7 +65,11 @@
                     Cloud Sync Active <i class="fas fa-circle text-green-500 text-[6px]"></i>
                 </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+                <button onclick="syncData()" class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-[10px] font-bold transition shadow-md">
+                    <i class="fas fa-cloud-download-alt"></i> <span class="hidden sm:inline">TARIK DATA</span>
+                </button>
+                
                 <button onclick="syncData()" class="bg-white dark:bg-gray-800 border dark:border-gray-700 p-2 rounded-lg hover:text-gurmie-orange transition" title="Sinkronisasi Manual">
                     <i class="fas fa-sync-alt" id="sync-icon"></i>
                 </button>
@@ -140,35 +144,40 @@
             <div class="lg:col-span-7 bg-white dark:bg-gurmie-panel p-5 rounded-xl border border-gray-200 dark:border-gray-800 shadow-md">
                 <h3 class="text-lg font-bold mb-4 border-b dark:border-gray-800 pb-2">Riwayat Transaksi</h3>
                 <div id="transaction-list" class="space-y-2 overflow-y-auto h-[600px] pr-2">
-                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // --- KONFIGURASI API ---
-        // GANTI URL INI DENGAN URL WEB APP GOOGLE SCRIPT ANDA
-        const API_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_ID/exec"; 
+        // MASUKKAN URL WEB APP GOOGLE SCRIPT ANDA DI SINI
+        const API_URL = "https://script.google.com/macros/s/AKfycbxM-c8KcAiYd8SJXF-m16Xqb34eTRvP_aASf7SQkbcZICrlRgQwvzXju6RXumX4MF-A/exec"; 
 
         let transactions = [];
         const categories_income = ['Suntikan Dana', 'Modal', 'Hasil Penjualan'];
         const categories_expense = ['Bahan Baku', 'Operasional', 'Tagihan', 'Gaji Pegawai', 'Lainnya'];
 
-        // --- CORE LOGIC SINKRONISASI ---
+        // --- CORE LOGIC SINKRONISASI (DIPERBARUI) ---
 
         async function syncData() {
             setSyncStatus(true);
             try {
-                const response = await fetch(API_URL);
+                // Tambahkan timestamp agar tidak kena cache browser
+                const response = await fetch(API_URL + "?t=" + Date.now());
                 const cloudData = await response.json();
-                transactions = cloudData;
+                
+                // Urutkan berdasarkan tanggal terbaru
+                transactions = cloudData.sort((a,b) => new Date(b.date) - new Date(a.date));
+                
+                // Simpan ke local sebagai backup
                 localStorage.setItem('transactions', JSON.stringify(transactions));
+                
                 renderAll();
-                showToast("Data Tersinkron", "success");
+                showToast("Data Terbaru Berhasil Diambil", "success");
             } catch (err) {
-                console.error(err);
-                showToast("Gagal Sinkron ke Cloud", "error");
-                // Fallback ke local jika gagal
+                console.error("Sync Error:", err);
+                showToast("Gagal Mengambil Data Cloud", "error");
                 transactions = JSON.parse(localStorage.getItem('transactions')) || [];
                 renderAll();
             } finally {
@@ -179,14 +188,18 @@
         async function saveToCloud() {
             setSyncStatus(true);
             try {
+                // Gunakan mode text/plain untuk menghindari masalah CORS preflight
                 await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Penting untuk Google Apps Script
-                    body: JSON.stringify(transactions)
+                    body: JSON.stringify(transactions),
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
                 });
-                showToast("Cloud Diperbarui", "success");
+                showToast("Berhasil Disimpan ke Cloud", "success");
             } catch (err) {
-                showToast("Gagal Update Cloud", "error");
+                console.error("Save Error:", err);
+                showToast("Cloud Gagal: Cek Izin Script", "error");
             } finally {
                 setSyncStatus(false);
             }
@@ -248,8 +261,9 @@
         function renderDashboard() {
             let inc = 0, exp = 0;
             transactions.forEach(t => {
-                if(t.type === 'income') inc += Number(t.amount);
-                else exp += Number(t.amount);
+                const amt = Number(t.amount) || 0;
+                if(t.type === 'income') inc += amt;
+                else exp += amt;
             });
             document.getElementById('total-income').innerText = formatRupiah(inc);
             document.getElementById('total-expense').innerText = formatRupiah(exp);
@@ -258,7 +272,11 @@
 
         function renderList() {
             const list = document.getElementById('transaction-list');
-            list.innerHTML = transactions.sort((a,b) => new Date(b.date) - new Date(a.date)).map(t => `
+            if (transactions.length === 0) {
+                list.innerHTML = `<p class="text-center text-gray-500 text-xs py-10 italic">Tidak ada data. Klik "Tarik Data" jika Anda sudah mengisi di HP lain.</p>`;
+                return;
+            }
+            list.innerHTML = transactions.map(t => `
                 <div class="flex items-center justify-between p-3 bg-white dark:bg-gurmie-panel border dark:border-gray-800 rounded-lg shadow-sm">
                     <div>
                         <p class="text-xs font-bold">${t.category}</p>
@@ -306,11 +324,15 @@
 
             transactions.push(newTrx);
             renderAll();
+            
+            // Simpan ke cloud
+            await saveToCloud();
+            
+            // Reset Form
             document.getElementById('transaction-form').reset();
             document.getElementById('items-container').innerHTML = '';
+            document.getElementById('date').valueAsDate = new Date();
             toggleFormMode();
-            
-            await saveToCloud();
         };
 
         async function deleteTrx(id) {
@@ -320,15 +342,13 @@
             await saveToCloud();
         }
 
-        // --- UTILS ---
-
         function formatRupiah(num) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
         }
 
         function showToast(msg, type) {
             const toast = document.getElementById('toast');
-            toast.className = `toast show p-3 rounded-lg text-white ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+            toast.className = `toast show flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border backdrop-blur-md font-medium text-sm ${type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'}`;
             document.getElementById('toast-msg').innerText = msg;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
@@ -341,7 +361,7 @@
         window.onload = () => {
             document.getElementById('date').valueAsDate = new Date();
             toggleFormMode();
-            syncData(); // Sinkron otomatis saat buka aplikasi
+            syncData(); 
         };
     </script>
 </body>
