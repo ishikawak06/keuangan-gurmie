@@ -563,7 +563,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxiWiO-Dw41_bmZB7QySGQpYlt53xNrBP3Nehftqx6D1TcbF8ASOYejsfvI1TfKSl7k/exec"; // Pertahankan script Google Sheets Anda
+        const API_URL = "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI"; // Pertahankan script Google Sheets Anda
         const geminiApiKey = ""; // API Key Gemini
 
         // --- FUNGSI HELPER GEMINI ---
@@ -856,7 +856,7 @@
                         const exists = reimburseHistory.some(h => h.method === finalMethod && h.account === finalAccount);
                         if (!exists) { reimburseHistory.push({ method: finalMethod, account: finalAccount }); localStorage.setItem('reimburseHistory', JSON.stringify(reimburseHistory)); renderReimburseSaved(); }
                     }
-                    reimburseData = { active: true, method: finalMethod, account: finalAccount, status: editId ? (transactions.find(t=>t.id===editId)?.reimburse?.status || 'Belum Ditransfer') : 'Belum Ditransfer' };
+                    reimburseData = { active: true, method: finalMethod, account: finalAccount, status: editId ? (transactions.find(t=>String(t.id)===String(editId))?.reimburse?.status || 'Belum Ditransfer') : 'Belum Ditransfer' };
                 }
             }
 
@@ -865,8 +865,8 @@
             const transactionData = { id: editId ? editId : generateID(), type: typeVal, amount: finalGrandTotal, date: document.getElementById('date').value, category: catVal, note: document.getElementById('note').value.trim(), receipt: currentReceiptBase64, items: itemsData, reimburse: reimburseData };
 
             if (editId) { 
-                const idx = transactions.findIndex(t => t.id === editId); 
-                transactions[idx] = transactionData; 
+                const idx = transactions.findIndex(t => String(t.id) === String(editId)); 
+                if (idx !== -1) transactions[idx] = transactionData; 
                 cancelEdit(); 
             } else { 
                 transactions.push(transactionData); 
@@ -911,7 +911,7 @@
                 const el = document.createElement('div'); el.className = `p-3 bg-white dark:bg-gray-800/40 rounded-lg border ${isPaid ? 'border-gray-200 dark:border-gray-700 opacity-60' : 'border-orange-200 dark:border-gurmie-orange/50'} shadow-sm transition-all`; el.innerHTML = `<div class="flex justify-between items-start mb-2"><div><p class="text-xs text-gray-500 dark:text-gray-400">${formatDate(trx.date)} - <span class="font-bold">${trx.category}</span></p><p class="text-sm font-bold mt-1">${formatRupiah(trx.amount)} ${statusBadge}</p></div>${btnAction}</div><div class="bg-gray-50 dark:bg-gray-900/50 p-2 rounded text-xs border border-gray-100 dark:border-gray-800"><p class="text-gray-600 dark:text-gray-400"><i class="fas fa-university w-4"></i> ${trx.reimburse.method}</p><p class="font-mono font-bold mt-1"><i class="fas fa-money-check w-4 text-gray-400"></i> ${trx.reimburse.account}</p></div>`; listEl.appendChild(el);
             });
         }
-        function toggleReimburseStatus(id) { const idx = transactions.findIndex(t => t.id === id); if(idx > -1 && transactions[idx].reimburse) { transactions[idx].reimburse.status = transactions[idx].reimburse.status === 'Sudah Ditransfer' ? 'Belum Ditransfer' : 'Sudah Ditransfer'; renderReimburseAdminList(); renderList(); handleDashFilterChange(); showToast(`Status: ${transactions[idx].reimburse.status}`, 'success'); syncToCloud(); } }
+        function toggleReimburseStatus(id) { const idx = transactions.findIndex(t => String(t.id) === String(id)); if(idx > -1 && transactions[idx].reimburse) { transactions[idx].reimburse.status = transactions[idx].reimburse.status === 'Sudah Ditransfer' ? 'Belum Ditransfer' : 'Sudah Ditransfer'; renderReimburseAdminList(); renderList(); handleDashFilterChange(); showToast(`Status: ${transactions[idx].reimburse.status}`, 'success'); syncToCloud(); } }
 
 
         // --- IMPORT / EXPORT EXCEL ---
@@ -969,7 +969,7 @@
                 if (tipe === 'masuk') {
                     let gt = cleanNumber(getVal(baseRow, 'grand_total')); if (gt <= 0) { errorLogs.push(`Baris ${baseRowNum}: Nominal Masuk tidak valid (${gt}).`); continue; }
                     if (!['Suntikan Dana', 'Modal'].includes(kategori)) { errorLogs.push(`Baris ${baseRowNum}: Kategori masuk salah.`); continue; }
-                    if(transactions.some(t => t.id === id)) { errorLogs.push(`Baris ${baseRowNum}: ID ${id} sudah ada (Duplikat).`); continue; }
+                    if(transactions.some(t => String(t.id) === String(id))) { errorLogs.push(`Baris ${baseRowNum}: ID ${id} sudah ada (Duplikat).`); continue; }
                     validImportDataBuffer.push({ id, type: 'income', date: tanggal, category: kategori, note: catatan, amount: gt, receipt: null, items: [], reimburse: {active: false} }); validTrxCount++;
                 } else if (tipe === 'keluar') {
                     let pakaiUang = String(getVal(baseRow, 'pakai_uang_sendiri') || '').toLowerCase();
@@ -990,7 +990,7 @@
                         let totalItem = qty * harga; grandTotalHitung += totalItem; parsedItems.push({ name: nama, qty: qty, unit: getVal(r, 'satuan') || '-', price: harga, total: totalItem });
                     });
 
-                    if(itemError) continue; if(transactions.some(t => t.id === id)) { errorLogs.push(`Baris ${baseRowNum}: ID ${id} sudah ada (Duplikat).`); continue; }
+                    if(itemError) continue; if(transactions.some(t => String(t.id) === String(id))) { errorLogs.push(`Baris ${baseRowNum}: ID ${id} sudah ada (Duplikat).`); continue; }
                     validImportDataBuffer.push({ id, type: 'expense', date: tanggal, category: kategori, note: catatan, amount: grandTotalHitung, receipt: null, items: parsedItems, reimburse: rData });
                     validTrxCount++; validItemCount += parsedItems.length;
                 } else { errorLogs.push(`Baris ${baseRowNum}: Tipe '${tipe}' tidak dikenali.`); }
@@ -1012,7 +1012,7 @@
         }
 
         function resetImportUI() { document.getElementById('import-file').value = ''; document.getElementById('import-ui').classList.remove('hidden'); document.getElementById('import-preview-area').classList.add('hidden'); validImportDataBuffer = []; }
-        function downloadReceipt(id) { const trx = transactions.find(t => t.id === id); if (!trx || !trx.receipt) return; const ext = trx.receipt.substring(trx.receipt.indexOf('/') + 1, trx.receipt.indexOf(';')) || 'jpg'; const filename = `struk_${trx.date}_${trx.id}.${ext}`; const link = document.createElement("a"); link.href = trx.receipt; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+        function downloadReceipt(id) { const trx = transactions.find(t => String(t.id) === String(id)); if (!trx || !trx.receipt) return; const ext = trx.receipt.substring(trx.receipt.indexOf('/') + 1, trx.receipt.indexOf(';')) || 'jpg'; const filename = `struk_${trx.date}_${trx.id}.${ext}`; const link = document.createElement("a"); link.href = trx.receipt; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
 
         // --- FITUR ANALYTICS, FILTER & AI ADVISOR ---
         function openAnalytics() { document.getElementById('analytics-modal').classList.add('active'); populateAnalyticsCategories(); applyFilter('month'); document.getElementById('ai-advice-result').classList.add('hidden'); }
@@ -1330,7 +1330,7 @@
         }
 
         function showTransactionDetails(id) {
-            const trx = transactions.find(t => t.id === id); if(!trx) return; const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category);
+            const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return; const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category);
             let modalHtml = `<div class="space-y-4"><div class="flex justify-between items-center border-b pb-3 border-gray-200 dark:border-gray-700"><div><p class="text-[10px] text-gray-500 uppercase tracking-wider">Kategori</p><p class="font-bold text-lg"><i class="fas ${catDetails.icon} mr-2 text-gurmie-orange"></i>${trx.category}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 uppercase tracking-wider">${isInc ? 'Nominal Transaksi' : 'Grand Total'}</p><p class="font-mono font-bold text-2xl ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${formatRupiah(trx.amount)}</p></div></div><div><p class="text-[10px] text-gray-500 uppercase tracking-wider">Tanggal Transaksi</p><p class="text-sm font-medium">${formatDate(trx.date)}</p></div>`;
             
             if (!isInc && trx.reimburse && trx.reimburse.active) modalHtml += `<div class="bg-orange-50 dark:bg-gurmie-orange/10 p-3 rounded-lg border border-orange-200 dark:border-gurmie-orange/30"><div class="flex justify-between items-center mb-1"><p class="text-xs font-bold text-orange-800 dark:text-gurmie-orange"><i class="fas fa-wallet mr-1"></i> Perlu Penggantian Dana</p><span class="text-[10px] px-2 py-0.5 rounded font-bold ${trx.reimburse.status === 'Sudah Ditransfer' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}">${trx.reimburse.status}</span></div><p class="text-xs text-gray-700 dark:text-gray-300 font-mono"><b>Metode:</b> ${trx.reimburse.method}<br><b>No Akun:</b> ${trx.reimburse.account}</p></div>`;
@@ -1350,7 +1350,7 @@
         }
 
         function editTransaction(id) {
-            const trx = transactions.find(t => t.id === id.toString()); if(!trx) return;
+            const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return;
             document.getElementById('edit-id').value = trx.id; document.querySelector(`input[name="type"][value="${trx.type}"]`).checked = true; toggleFormMode(); document.getElementById('date').value = trx.date; document.getElementById('note').value = trx.note;
             const catSelect = document.getElementById('category'); if(!Array.from(catSelect.options).some(opt => opt.value === trx.category)) { const option = document.createElement('option'); option.value = trx.category; option.innerHTML = `&#xf466; ${trx.category} (Dihapus)`; catSelect.appendChild(option); } catSelect.value = trx.category; 
             if (trx.type === 'income') { document.getElementById('nominal-input').value = trx.amount; } else {
@@ -1373,7 +1373,7 @@
         
         function deleteTransaction(id) { 
             if(confirm('Yakin hapus data?')) { 
-                transactions = transactions.filter(t => t.id !== id.toString()); 
+                transactions = transactions.filter(t => String(t.id) !== String(id)); 
                 init(); 
                 syncToCloud();
                 showToast('Dihapus!'); 
