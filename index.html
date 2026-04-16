@@ -563,10 +563,10 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbyUury4ui2PR1_O38PUxJMJwNS_7rG63Q65U5ciaP-4_nLVzHaBdahaj2Gl8q3Lxptm/exec"; // Pertahankan script Google Sheets Anda
-        const geminiApiKey = ""; // API Key Gemini akan disediakan oleh sistem platform secara otomatis
+        const API_URL = "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI"; // Pertahankan script Google Sheets Anda
+        const geminiApiKey = ""; // API Key Gemini
 
-        // --- FUNGSI HELPER GEMINI (Dengan Exponential Backoff) ---
+        // --- FUNGSI HELPER GEMINI ---
         async function fetchGeminiAPI(payload, isImage = false) {
             const modelName = isImage ? "gemini-2.5-flash-preview-09-2025" : "gemini-2.5-flash-preview-09-2025";
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiApiKey}`;
@@ -583,12 +583,13 @@
                     return await response.json();
                 } catch (e) {
                     if (i === delays.length) throw e;
-                    await new Promise(res => setTimeout(res, delays[i])); // Tunggu sebelum mencoba lagi
+                    await new Promise(res => setTimeout(res, delays[i]));
                 }
             }
         }
 
         let transactions = []; 
+        let categories = []; // Akan ditimpa oleh data dari Cloud atau Local Storage
         const defaultCategories = [
             { id: 'c1', name: 'Bahan Baku', icon: 'fa-drumstick-bite', hex: '&#xf6d7;' },
             { id: 'c2', name: 'Operasional', icon: 'fa-store', hex: '&#xf54e;' },
@@ -596,19 +597,18 @@
             { id: 'c4', name: 'Gaji Pegawai', icon: 'fa-users', hex: '&#xf0c0;' },
             { id: 'c5', name: 'Lainnya', icon: 'fa-box', hex: '&#xf466;' }
         ];
-        let categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
+        
         let reimburseHistory = JSON.parse(localStorage.getItem('reimburseHistory')) || [];
 
         let anlBarChart; 
         let currentReceiptBase64 = null;
         let validImportDataBuffer = [];
-        
         let currentFilteredData = [];
         let currentPeriodLabel = "Bulan Ini";
         let currentCatSummary = {}; 
         let currentAnalyticsSummary = { inc: 0, exp: 0, count: 0 };
 
-        // Fungsi Parser Tanggal Super Aman
+        // Fungsi Parser & Pembersih
         function parseExcelDate(val) {
             if (val === undefined || val === null || val === '') return null;
             if (typeof val === 'number') {
@@ -630,7 +630,6 @@
             return null;
         }
 
-        // Fungsi Pembersih Angka
         function cleanNumber(val) {
             if (val === undefined || val === null || val === '') return 0;
             if (typeof val === 'number') return Math.abs(val);
@@ -650,7 +649,7 @@
             return cat ? cat : { name: catName, icon: 'fa-box', hex: '&#xf466;' }; 
         }
 
-        // 2. FUNGSI LOAD DATA
+        // 2. FUNGSI LOAD DATA (Kini memuat Transaksi & Kategori)
         window.addEventListener('load', async () => {
             setTheme(savedTheme);
             document.getElementById('date').valueAsDate = new Date();
@@ -670,37 +669,68 @@
                 
                 if (data.error) {
                     showToast('Gagal memuat: ' + data.error, 'error');
-                    transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                    fallbackLocalData();
                 } else {
-                    if(Array.isArray(data)){
-                       transactions = data;
-                       localStorage.setItem('transactions', JSON.stringify(transactions));
-                       showToast('Berhasil memuat data!', 'success');
+                    // Cek jika data memiliki format baru (ada transactions & categories)
+                    if (data.transactions || data.categories) {
+                        if (data.transactions && Array.isArray(data.transactions)) {
+                            transactions = data.transactions;
+                            localStorage.setItem('transactions', JSON.stringify(transactions));
+                        }
+                        if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
+                            categories = data.categories;
+                            localStorage.setItem('categories', JSON.stringify(categories));
+                        } else {
+                            // Jika sheet categories kosong, pakai default
+                            categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
+                        }
+                        showToast('Berhasil memuat data!', 'success');
+                    } else if(Array.isArray(data)) {
+                        // Kompatibilitas dengan respons lama (Hanya Array Transaksi)
+                        transactions = data;
+                        localStorage.setItem('transactions', JSON.stringify(transactions));
+                        categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
+                        showToast('Memuat data (Versi Lama)', 'warning');
                     } else {
-                       transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                        fallbackLocalData();
                     }
                 }
             } catch (err) {
                 showToast('Koneksi Google Sheets gagal. Menggunakan data lokal.', 'error');
-                transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                fallbackLocalData();
             }
+            
             init();
+            renderCategorySettings();
+            updateCategorySelect();
         }
 
-        // 3. FUNGSI SIMPAN KE CLOUD 
+        function fallbackLocalData() {
+            transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
+        }
+
+        // 3. FUNGSI SIMPAN KE CLOUD (Kini mengirim Transaksi & Kategori)
         async function syncToCloud() { 
             try { 
                 localStorage.setItem('transactions', JSON.stringify(transactions)); 
+                localStorage.setItem('categories', JSON.stringify(categories)); 
                 
-                if(!API_URL.includes("script.google.com")) return; // Lewati jika API kosong
+                if(!API_URL.includes("script.google.com")) return;
 
                 const btnSync = document.getElementById('btn-sync');
                 if(btnSync) btnSync.classList.add('animate-spin', 'text-blue-500');
                 
+                // Format Payload Baru: Mengandung 2 array
+                const payload = {
+                    transactions: transactions,
+                    categories: categories
+                };
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(transactions)
+                    body: JSON.stringify(payload)
                 });
                 
                 const result = await response.text();
@@ -1104,7 +1134,7 @@
             const reader = new FileReader(); reader.onload = function(e) {
                 const img = new Image(); img.onload = function() {
                     const canvas = document.createElement('canvas'); 
-                    const maxSize = 800; // Resize untuk menghemat kuota dan mempercepat API
+                    const maxSize = 800; 
                     let scaleSize = 1;
                     if (img.width > maxSize || img.height > maxSize) {
                         scaleSize = Math.min(maxSize / img.width, maxSize / img.height);
@@ -1131,7 +1161,6 @@
             overlay.classList.remove('hidden'); actions.classList.add('hidden'); 
             
             try {
-                // Ekstrak data mentah dan tipe mime dari format base64
                 const base64Data = base64.split(',')[1];
                 const mimeType = base64.match(/data:(.*?);/)[1];
 
@@ -1171,7 +1200,6 @@
                     throw new Error("Tidak ada item ditemukan");
                 }
 
-                // Normalisasi hasil dari Gemini
                 let grandTotal = 0;
                 let parsedItems = extractedItems.map(item => {
                     const q = parseFloat(item.qty) || 1;
@@ -1358,25 +1386,80 @@
             handleDashFilterChange(); 
         }
         
-        // --- ADMIN KATEGORI SETTINGS ---
-        function renderCategorySettings() { const listEl = document.getElementById('category-list'); listEl.innerHTML = ''; if (categories.length === 0) { listEl.innerHTML = `<div class="text-center text-gray-500 my-6 text-sm italic">Belum ada kategori.</div>`; return; } categories.forEach(cat => { const item = document.createElement('div'); item.className = 'flex justify-between items-center p-3 bg-white dark:bg-gray-800/40 rounded-lg border list-enter'; item.innerHTML = `<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center border text-gurmie-orange"><i class="fas ${cat.icon}"></i></div><span class="text-sm font-medium">${cat.name}</span></div><div class="flex gap-2"><button type="button" onclick="editCategorySettings('${cat.id}')" class="text-blue-500 p-1"><i class="fas fa-edit"></i></button><button type="button" onclick="deleteCategorySettings('${cat.id}')" class="text-red-500 p-1"><i class="fas fa-trash"></i></button></div>`; listEl.appendChild(item); }); }
+        // --- ADMIN KATEGORI SETTINGS (KINI TERHUBUNG KE CLOUD) ---
+        function renderCategorySettings() { 
+            const listEl = document.getElementById('category-list'); 
+            listEl.innerHTML = ''; 
+            if (categories.length === 0) { 
+                listEl.innerHTML = `<div class="text-center text-gray-500 my-6 text-sm italic">Belum ada kategori.</div>`; 
+                return; 
+            } 
+            categories.forEach(cat => { 
+                const item = document.createElement('div'); 
+                item.className = 'flex justify-between items-center p-3 bg-white dark:bg-gray-800/40 rounded-lg border list-enter'; 
+                item.innerHTML = `<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center border text-gurmie-orange"><i class="fas ${cat.icon}"></i></div><span class="text-sm font-medium">${cat.name}</span></div><div class="flex gap-2"><button type="button" onclick="editCategorySettings('${cat.id}')" class="text-blue-500 p-1"><i class="fas fa-edit"></i></button><button type="button" onclick="deleteCategorySettings('${cat.id}')" class="text-red-500 p-1"><i class="fas fa-trash"></i></button></div>`; 
+                listEl.appendChild(item); 
+            }); 
+        }
+        
         document.getElementById('category-form').addEventListener('submit', (e) => { 
-            e.preventDefault(); const idInput = document.getElementById('cat-edit-id').value; const nameInput = document.getElementById('cat-name-input').value.trim(); const iconSelect = document.getElementById('cat-icon-input'); const iconVal = iconSelect.value; const hexVal = iconSelect.options[iconSelect.selectedIndex].text; if (!nameInput) { showToast('Nama wajib diisi!', 'error'); return; } if (categories.some(c => c.name.toLowerCase() === nameInput.toLowerCase() && c.id !== idInput)) { showToast('Nama sudah ada!', 'error'); return; } 
+            e.preventDefault(); 
+            const idInput = document.getElementById('cat-edit-id').value; 
+            const nameInput = document.getElementById('cat-name-input').value.trim(); 
+            const iconSelect = document.getElementById('cat-icon-input'); 
+            const iconVal = iconSelect.value; 
+            const hexVal = iconSelect.options[iconSelect.selectedIndex].text; 
+            
+            if (!nameInput) { showToast('Nama wajib diisi!', 'error'); return; } 
+            if (categories.some(c => c.name.toLowerCase() === nameInput.toLowerCase() && c.id !== idInput)) { showToast('Nama sudah ada!', 'error'); return; } 
+            
             if (idInput) { 
-                const idx = categories.findIndex(c => c.id === idInput); const oldName = categories[idx].name; categories[idx] = { id: idInput, name: nameInput, icon: iconVal, hex: hexVal }; 
+                const idx = categories.findIndex(c => c.id === idInput); 
+                const oldName = categories[idx].name; 
+                categories[idx] = { id: idInput, name: nameInput, icon: iconVal, hex: hexVal }; 
                 transactions.forEach(t => { if(t.category === oldName) t.category = nameInput; }); 
-                syncToCloud(); 
                 showToast('Diperbarui!'); 
             } else { 
                 categories.push({ id: 'c_' + generateID(), name: nameInput, icon: iconVal, hex: hexVal }); 
                 showToast('Ditambahkan!'); 
             } 
-            saveCategoriesData(); cancelCatEdit(); 
+            saveCategoriesData(); 
+            cancelCatEdit(); 
         });
-        function editCategorySettings(id) { const cat = categories.find(c => c.id === id); if(!cat) return; document.getElementById('cat-edit-id').value = cat.id; document.getElementById('cat-name-input').value = cat.name; document.getElementById('cat-icon-input').value = cat.icon; document.getElementById('cat-cancel-btn').classList.remove('hidden'); }
-        function deleteCategorySettings(id) { if(confirm('Yakin hapus kategori ini?')) { categories = categories.filter(c => c.id !== id); saveCategoriesData(); showToast('Dihapus!', 'success'); } }
-        function cancelCatEdit() { document.getElementById('category-form').reset(); document.getElementById('cat-edit-id').value = ''; document.getElementById('cat-cancel-btn').classList.add('hidden'); }
-        function saveCategoriesData() { localStorage.setItem('categories', JSON.stringify(categories)); renderCategorySettings(); updateCategorySelect(); renderList(); }
+
+        function editCategorySettings(id) { 
+            const cat = categories.find(c => c.id === id); 
+            if(!cat) return; 
+            document.getElementById('cat-edit-id').value = cat.id; 
+            document.getElementById('cat-name-input').value = cat.name; 
+            document.getElementById('cat-icon-input').value = cat.icon; 
+            document.getElementById('cat-cancel-btn').classList.remove('hidden'); 
+        }
+
+        function deleteCategorySettings(id) { 
+            if(confirm('Yakin hapus kategori ini? Data ini akan terhapus juga di perangkat lain saat tersinkronisasi.')) { 
+                categories = categories.filter(c => c.id !== id); 
+                saveCategoriesData(); 
+                showToast('Dihapus!', 'success'); 
+            } 
+        }
+
+        function cancelCatEdit() { 
+            document.getElementById('category-form').reset(); 
+            document.getElementById('cat-edit-id').value = ''; 
+            document.getElementById('cat-cancel-btn').classList.add('hidden'); 
+        }
+
+        // Fungsi ini sekarang ikut memicu syncToCloud()
+        function saveCategoriesData() { 
+            localStorage.setItem('categories', JSON.stringify(categories)); 
+            renderCategorySettings(); 
+            updateCategorySelect(); 
+            renderList(); 
+            
+            // Pemicu Simpan ke Cloud untuk Kategori
+            syncToCloud(); 
+        }
     </script>
 </body>
 </html>
