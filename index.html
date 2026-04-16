@@ -379,7 +379,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI VERSI & API ---
-        const APP_VERSION = "2.0.1"; // UBAH ANGKA INI UNTUK MEMAKSA SEMUA DEVICE RESET CACHE
+        const APP_VERSION = "2.0.3"; // UBAH ANGKA INI UNTUK MEMAKSA SEMUA DEVICE RESET CACHE
         const API_URL = "https://script.google.com/macros/s/AKfycbxQQYAdE8tcL5XqgkwXDZHw0-jzGymvhXwZO-UEDfBGsVI3uJonUs96vZ3cwkhqXqX9/exec"; 
 
         let transactions = []; 
@@ -608,7 +608,14 @@
                 statusText.innerText = "Mengirim ke Spreadsheet...";
                 icon.className = "fas fa-cloud-upload-alt animate-bounce text-3xl text-gurmie-orange";
                 const payload = { transactions: transactions, categories: categories };
-                await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                
+                // SOLUSI UNTUK LAPTOP: Tambahkan mode: 'no-cors' agar browser Desktop tidak memblokir POST
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: JSON.stringify(payload) 
+                });
 
                 icon.className = "fas fa-hourglass-half animate-pulse text-3xl text-gurmie-orange";
                 for(let i=5; i>0; i--) { statusText.innerText = `Memproses... (${i} detik)`; await new Promise(res => setTimeout(res, 1000)); }
@@ -620,9 +627,9 @@
                 const verifyData = await verifyRes.json();
                 
                 if ((verifyData.transactions || []).some(t => String(t.id) === String(newData.id))) {
-                    icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Selesai!"; showToast('Sukses!', 'success');
+                    icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Selesai!"; showToast('Sukses Disimpan ke Server!', 'success');
                 } else {
-                    icon.className = "fas fa-exclamation-triangle text-3xl text-yellow-500"; statusText.innerText = "Tersimpan lokal (Cloud Delay)."; showToast('Tersimpan lokal.', 'warning');
+                    icon.className = "fas fa-exclamation-triangle text-3xl text-yellow-500"; statusText.innerText = "Tersimpan lokal (Cloud Delay)."; showToast('Tersimpan lokal. Menunggu Cloud Update.', 'warning');
                 }
                 await new Promise(res => setTimeout(res, 1000));
 
@@ -652,12 +659,19 @@
 
                 statusText.innerText = "Menghapus di Spreadsheet...";
                 const payload = { transactions: transactions, categories: categories };
-                await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                
+                // SOLUSI UNTUK LAPTOP: Tambahkan mode: 'no-cors' agar browser Desktop tidak memblokir POST Hapus
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: JSON.stringify(payload) 
+                });
 
                 icon.className = "fas fa-hourglass-half animate-pulse text-3xl text-gurmie-orange";
                 for(let i=5; i>0; i--) { statusText.innerText = `Memproses... (${i} detik)`; await new Promise(res => setTimeout(res, 1000)); }
 
-                icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Selesai!"; showToast('Dihapus selamanya!', 'success');
+                icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Selesai!"; showToast('Data Dihapus Secara Permanen!', 'success');
                 await new Promise(res => setTimeout(res, 1000));
             } catch (err) {
                 icon.className = "fas fa-times-circle text-3xl text-red-500"; statusText.innerText = "Koneksi terganggu. Dihapus di lokal."; showToast('Dihapus lokal.', 'error');
@@ -665,24 +679,89 @@
             } finally { loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500); }
         }
 
-        async function syncToCloud(showNotif = true) { 
+        // ==========================================
+        //  TARIK DATA STRICT CLOUD (CLOUD WINS)
+        // ==========================================
+        async function forceSync() { 
             if(isSyncing) return; isSyncing = true;
-            try { 
-                const btnSync = document.getElementById('btn-sync'); if(btnSync) btnSync.classList.add('animate-spin', 'text-blue-500');
-                await pullAndMergeCloudData(true); 
-                renderList(); handleDashFilterChange(); renderCategorySettings();
-                if(!API_URL.includes("script.google.com")) { if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500'); isSyncing = false; return; }
-                const payload = { transactions: transactions, categories: categories };
-                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-                const result = await response.text();
-                if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
-                if (result === "Success") { if (showNotif) showToast('Sinkronisasi Berhasil!', 'success'); } else { if (showNotif) showToast('Gagal Cloud', 'error'); }
-            } catch (e) { 
-                const btnSync = document.getElementById('btn-sync'); if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500'); if (showNotif) showToast('Koneksi terganggu.', 'error');
-            } finally { isSyncing = false; }
-        }
+            
+            const loader = document.getElementById('sync-loader');
+            const statusText = document.getElementById('sync-status-text');
+            const icon = document.getElementById('sync-loader-icon');
 
-        function forceSync() { showToast('Menarik Data dari Cloud...', 'warning'); syncToCloud(true); }
+            loader.classList.remove('hidden');
+            setTimeout(() => { loader.style.opacity = '1'; }, 10);
+
+            icon.className = "fas fa-cloud-download-alt animate-bounce text-3xl text-blue-500";
+            statusText.innerText = "Membaca & Membandingkan Data Server...";
+            showToast('Memulai Tarik Data dari Cloud...', 'warning');
+
+            try {
+                if(!API_URL.includes("script.google.com")) throw new Error("API URL belum diset");
+
+                // Ambil dari Cloud dengan Bypass Cache maksimal
+                const fetchUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
+                const response = await fetch(fetchUrl, { method: 'GET', cache: 'no-store' });
+                
+                if (!response.ok) throw new Error("Gagal terhubung ke server (HTTP Error)");
+
+                const cloudData = await response.json();
+                if (cloudData.error) throw new Error(cloudData.error);
+
+                // ATURAN MUTLAK: CLOUD MENANG (OVERWRITE LOKAL SECARA KESELURUHAN)
+                icon.className = "fas fa-sync animate-spin text-3xl text-gurmie-orange";
+                statusText.innerText = "Memperbarui Data Lokal (Cloud Menang)...";
+
+                let cloudTrx = cloudData.transactions || (Array.isArray(cloudData) ? cloudData : []);
+                let cloudCat = cloudData.categories || defaultCategories;
+
+                transactions = cloudTrx;
+                categories = cloudCat;
+                
+                // Bersihkan tracker hapus, karena Cloud sudah jadi sumber kebenaran murni (Source of Truth)
+                deletedIds = [];
+                deletedCatIds = [];
+                localStorage.setItem('deletedIds', JSON.stringify(deletedIds));
+                localStorage.setItem('deletedCatIds', JSON.stringify(deletedCatIds));
+
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('categories', JSON.stringify(categories));
+
+                init();
+                renderCategorySettings();
+                updateCategorySelect();
+
+                icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110 transition-all";
+                statusText.innerText = "Sinkronisasi Sempurna! Data disamakan dengan Cloud.";
+                showToast('Tarik Data Berhasil! Data Lokal Teredit sesuai Cloud.', 'success');
+                
+                await new Promise(r => setTimeout(r, 1500));
+
+            } catch (err) {
+                console.error("Tarik Data Gagal:", err);
+                
+                icon.className = "fas fa-dumpster-fire text-4xl text-red-500 scale-110 transition-all";
+                statusText.innerText = "Gagal Tarik Data! Membersihkan Semua Data Lokal...";
+                
+                // ATURAN MUTLAK KETIKA GAGAL: HAPUS SEMUA TRANSAKSI LOKAL (WIPE OUT)
+                transactions = [];
+                localStorage.removeItem('transactions');
+                
+                // Kategori sengaja dipertahankan (jika ada di lokal) atau di-reset ke default
+                // agar pengguna tetap bisa menginput data pemasukan/pengeluaran baru
+                if(categories.length === 0) categories = defaultCategories; 
+                
+                init();
+                
+                showToast('GAGAL! Sistem MENGHAPUS SEMUA DATA LOKAL untuk mencegah bentrok.', 'error');
+                
+                await new Promise(r => setTimeout(r, 3000)); // Beri waktu user membaca info penting ini
+            } finally {
+                isSyncing = false;
+                loader.style.opacity = '0';
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+        }
 
         function handleDashFilterChange() { const type = document.getElementById('dash-filter-type').value; const monthInput = document.getElementById('dash-filter-month'); const yearInput = document.getElementById('dash-filter-year'); monthInput.classList.add('hidden'); yearInput.classList.add('hidden'); if (type === 'custom_month') { monthInput.classList.remove('hidden'); if(!monthInput.value) monthInput.value = new Date().toISOString().slice(0, 7); } else if (type === 'custom_year') { yearInput.classList.remove('hidden'); if(!yearInput.value) yearInput.value = new Date().getFullYear(); } updateDashboard(); }
         function updateDashboard() {
