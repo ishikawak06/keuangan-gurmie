@@ -573,7 +573,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbwXbwuCmMdacmrmzXzBzJ0Ix1tJEfNx2630goqGU0Ds_Ms0j1oaAEQz9Hnhm-c8i84R/exec"; // Pertahankan script Google Sheets Anda
+        const API_URL = "https://script.google.com/macros/s/AKfycbyBhm4i2Li0bk5BWThAXhlTvqD6-eJ7ZBiwntvB_LUe24Ph93VJNTJcupdGlwMFf5nJ/exec"; // Pertahankan script Google Sheets Anda
         const geminiApiKey = ""; // API Key Gemini
 
         // --- FUNGSI HELPER GEMINI ---
@@ -671,13 +671,16 @@
             renderReimburseSaved(); 
             toggleFormMode(); 
             
+            // PENTING: Muat data lokal dulu agar saat narik dari cloud data lokal yg gagal upload tidak terhapus (terwiped)
+            fallbackLocalData();
+            
             await fetchFromCloud(); 
             
             // HILANGKAN LAYAR LOADING SETELAH SELESAI MEMUAT
             setTimeout(() => {
                 const loader = document.getElementById('initial-loader');
                 loader.style.opacity = '0';
-                setTimeout(() => loader.classList.add('hidden'), 500); // Tunggu transisi CSS selesai
+                setTimeout(() => loader.classList.add('hidden'), 500); 
             }, 500);
 
             // JALANKAN INTERVAL SINKRONISASI DIAM-DIAM SETIAP 5 DETIK
@@ -695,7 +698,7 @@
                 let cloudTrx = cloudData.transactions || (Array.isArray(cloudData) ? cloudData : []);
                 let cloudCat = cloudData.categories || defaultCategories;
                 
-                // GABUNGKAN TRANSAKSI
+                // GABUNGKAN TRANSAKSI (Mencegah data hilang)
                 const trxMap = new Map();
                 cloudTrx.forEach(t => { if (!deletedIds.includes(String(t.id))) trxMap.set(String(t.id), t); });
                 transactions.forEach(t => trxMap.set(String(t.id), t));
@@ -735,23 +738,19 @@
         }
 
         // --- BACKGROUND SILENT SYNC SETIAP 5 DETIK ---
-        // Fungsi ini HANYA menarik data dari cloud tanpa merefresh form Anda, jadi aman
         async function silentSyncBackground() {
             if(isSyncing || !API_URL.includes("script.google.com")) return;
             isSyncing = true;
 
-            // Nyalakan titik hijau berkedip di logo dompet (opsional, penanda sync jalan)
             const dot = document.getElementById('auto-sync-dot');
             if(dot) dot.classList.remove('hidden');
 
             const success = await pullAndMergeCloudData();
             
             if(success) {
-                // Hanya me-refresh daftar yang ada di bawah, tidak me-reset <form>
                 renderList();
                 handleDashFilterChange();
                 renderCategorySettings();
-                // Matikan titik setelah selesai
                 if(dot) dot.classList.add('hidden');
             }
             
@@ -760,17 +759,15 @@
 
         // --- PUSH KE CLOUD (DIPANGGIL SAAT KLIK SIMPAN) ---
         async function syncToCloud(showNotif = true) { 
-            if(isSyncing) return; // Cegah double request
+            if(isSyncing) return;
             isSyncing = true;
 
             try { 
                 const btnSync = document.getElementById('btn-sync');
                 if(btnSync) btnSync.classList.add('animate-spin', 'text-blue-500');
 
-                // Tarik dulu yang terbaru agar data di HP lain tidak terhapus
                 await pullAndMergeCloudData();
                 
-                // Update tampilan dengan data gabungan
                 renderList();
                 handleDashFilterChange();
                 renderCategorySettings();
@@ -781,7 +778,6 @@
                     return;
                 }
 
-                // Baru kita dorong ke cloud
                 const payload = { transactions: transactions, categories: categories };
 
                 const response = await fetch(API_URL, {
@@ -886,6 +882,11 @@
             if (typeVal === 'income') {
                 finalGrandTotal = cleanNumber(document.getElementById('nominal-input').value);
                 if (finalGrandTotal <= 0) { showToast('Nominal harus valid dan > 0!', 'error'); return; }
+                
+                // PERBAIKAN: Suntikkan baris "item palsu" agar Apps Script Google Sheets 
+                // bisa menuliskannya di Excel (menghindari error array kosong di belakang layar)
+                itemsData.push({ name: 'Pemasukan: ' + catVal, qty: 1, unit: '-', price: finalGrandTotal, total: finalGrandTotal });
+                
             } else {
                 const itemRows = document.querySelectorAll('.item-row');
                 if (itemRows.length === 0) { showToast('Tambahkan minimal 1 baris pembelian!', 'error'); return; }
@@ -932,7 +933,14 @@
                 transactions.push(transactionData); 
             }
             
-            document.getElementById('transaction-form').reset(); document.getElementById('items-container').innerHTML = ''; addEmptyRow(); document.querySelector('input[name="type"][value="income"]').checked = true; toggleFormMode(); toggleReimburseFields(); removeReceipt(); 
+            document.getElementById('transaction-form').reset(); 
+            document.getElementById('items-container').innerHTML = ''; 
+            addEmptyRow(); 
+            // PERBAIKAN: Kembalikan radio button ke pengeluaran (default) bukan pemasukan
+            document.querySelector('input[name="type"][value="expense"]').checked = true; 
+            toggleFormMode(); 
+            toggleReimburseFields(); 
+            removeReceipt(); 
             
             init(); 
             // Langsung Push ke Cloud saat user klik simpan
