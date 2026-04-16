@@ -44,7 +44,6 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors pb-24 selection:bg-gurmie-orange selection:text-white antialiased">
 
-    <!-- LAYAR LOADING AWAL -->
     <div id="initial-loader" class="fixed inset-0 z-[9999] bg-white dark:bg-gray-900 flex flex-col items-center justify-center transition-opacity duration-500">
         <img src="https://raw.githubusercontent.com/ishikawak06/keuangan-gurmie/refs/heads/main/Desain%20tanpa%20judul222.png" alt="Logo" class="w-32 h-32 md:w-40 md:h-40 object-contain animate-breathe mb-6">
         <h2 class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">Gurmie<span class="text-gurmie-red">Finance</span></h2>
@@ -52,18 +51,16 @@
         <div id="version-badge" class="mt-4 text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-500 px-3 py-1 rounded-full font-mono"></div>
     </div>
 
-    <!-- LAYAR LOADING SINKRONISASI -->
-    <div id="sync-loader" class="fixed inset-0 z-[9999] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500 hidden opacity-0">
+    <div id="sync-loader" class="fixed inset-0 z-[9999] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-300 hidden opacity-0">
         <div class="relative w-24 h-24 flex items-center justify-center mb-6">
             <div class="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-800"></div>
             <div class="absolute inset-0 rounded-full border-4 border-gurmie-orange border-t-transparent animate-spin"></div>
             <i id="sync-loader-icon" class="fas fa-sync text-3xl text-gurmie-orange"></i>
         </div>
-        <h2 class="text-xl font-extrabold tracking-tight text-gray-800 dark:text-white mb-2">Sistem Sedang Bekerja</h2>
-        <p id="sync-status-text" class="text-sm text-gray-600 dark:text-gray-400 font-medium text-center px-6 transition-all duration-300">Harap tunggu...</p>
+        <h2 class="text-xl font-extrabold tracking-tight text-gray-800 dark:text-white mb-2">Harap Menunggu</h2>
+        <p id="sync-status-text" class="text-sm text-gray-600 dark:text-gray-400 font-bold text-center px-6 transition-all duration-300">Sistem sedang bekerja...</p>
     </div>
 
-    <!-- HEADER -->
     <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 transition-colors">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -86,7 +83,6 @@
 
     <main class="max-w-3xl mx-auto px-4 mt-6 space-y-6">
         
-        <!-- BANNER PERINGATAN -->
         <div id="cache-warning-banner" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 p-4 rounded-xl flex items-start gap-3 shadow-sm list-enter">
             <i class="fas fa-exclamation-triangle text-red-500 mt-1 text-lg"></i>
             <div>
@@ -98,7 +94,6 @@
             </div>
         </div>
 
-        <!-- DASHBOARD MINI -->
         <section class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-gray-700 transition-colors">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div>
@@ -136,7 +131,6 @@
             </div>
         </section>
 
-        <!-- FORM TRANSAKSI -->
         <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
             <div class="bg-gray-50 dark:bg-gray-900 p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                 <h2 class="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
@@ -178,19 +172,17 @@
                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5"><i class="fas fa-money-bill-wave text-gray-400 mr-1"></i> Nominal Pemasukan <span class="text-red-500">*</span></label>
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">Rp</span>
-                        <!-- DIGANTI KE TYPE TEXT AGAR BISA FORMAT TITIK OTOMATIS -->
                         <input type="text" inputmode="numeric" id="nominal-input" placeholder="0" oninput="formatCurrencyInput(event)" class="w-full pl-12 p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-green-500 outline-none transition font-mono font-bold text-lg text-green-600 dark:text-green-500 shadow-inner">
                     </div>
                 </div>
 
                 <div id="expense-only-sections" class="space-y-5">
-                    <!-- UPLOAD STRUK -->
                     <div class="border-2 border-dashed border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-4 transition-all hover:border-blue-400 relative">
                         <label class="block text-xs font-bold text-blue-800 dark:text-blue-400 mb-2">Upload Foto Struk (Opsional)</label>
                         <div id="upload-ui-main" class="text-center">
                             <input type="file" id="receipt-upload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
                             <button type="button" onclick="document.getElementById('receipt-upload').click()" class="w-full py-3 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-100 transition shadow-sm flex items-center justify-center gap-2">
-                                <i class="fas fa-cloud-upload-alt text-lg"></i> Upload ke Google Drive
+                                <i class="fas fa-camera text-lg"></i> Ambil / Pilih Foto
                             </button>
                         </div>
                         <div id="preview-container" class="hidden">
@@ -203,7 +195,6 @@
                         </div>
                     </div>
 
-                    <!-- RINCIAN BARANG -->
                     <div>
                         <div class="flex justify-between items-end mb-2 border-b border-gray-200 dark:border-gray-700 pb-2">
                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300"><i class="fas fa-shopping-basket text-gray-400 mr-1"></i> Rincian Pembelian <span class="text-red-500">*</span></label>
@@ -217,7 +208,6 @@
                         <p id="grand-total-display" class="text-xl font-bold font-mono text-gurmie-orange break-all text-right max-w-[60%]">Rp 0</p>
                     </div>
 
-                    <!-- REIMBURSEMENT -->
                     <div class="bg-orange-50 dark:bg-gurmie-orange/10 p-4 rounded-xl border border-orange-200 dark:border-gurmie-orange/30">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" id="use-personal-money" class="peer sr-only" onchange="toggleReimburseFields()">
@@ -264,14 +254,12 @@
             </form>
         </section>
 
-        <!-- DAFTAR TRANSAKSI -->
         <section class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-gray-700">
             <h2 class="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2 mb-4"><div class="w-6 h-6 rounded bg-gray-800 text-white flex items-center justify-center text-xs shadow-sm"><i class="fas fa-history"></i></div> Riwayat</h2>
             <div id="transaction-list" class="space-y-3"></div>
         </section>
     </main>
 
-    <!-- FLOATING BOTTOM NAV -->
     <nav class="fixed bottom-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-4 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center h-14">
             <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center justify-center w-12 text-gurmie-orange"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px] font-bold">Home</span></button>
@@ -279,13 +267,11 @@
         </div>
     </nav>
 
-    <!-- TOAST -->
     <div id="toast" class="toast">
         <i id="toast-icon" class="fas fa-check-circle text-lg"></i>
         <span id="toast-msg"></span>
     </div>
 
-    <!-- MODAL DETAIL -->
     <div id="detail-modal" class="modal fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center">
         <div class="bg-white dark:bg-gray-900 w-full sm:w-[450px] rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800">
@@ -296,22 +282,20 @@
         </div>
     </div>
 
-    <!-- MODAL KONFIRMASI HAPUS -->
     <div id="confirm-modal" class="modal fixed inset-0 z-[100] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-opacity duration-300 px-4">
         <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col items-center text-center border border-gray-200 dark:border-gray-700">
             <div class="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center text-2xl mb-4">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
             <h3 class="font-bold text-xl mb-2 text-gray-900 dark:text-white">Hapus Data?</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Tindakan ini akan menghapus data transaksi secara permanen.</p>
+            <p id="confirm-msg" class="text-sm text-gray-500 dark:text-gray-400 mb-6">Tindakan ini permanen.</p>
             <div class="flex gap-3 w-full">
                 <button onclick="closeConfirmModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition">Batal</button>
-                <button id="confirm-delete-btn" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition shadow-lg shadow-red-500/30">Ya, Hapus</button>
+                <button id="confirm-action-btn" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition shadow-lg shadow-red-500/30">Ya, Hapus</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL SETTINGS (ADMIN) -->
     <div id="settings-modal" class="modal fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
         <div class="bg-white dark:bg-gray-900 w-full sm:w-[500px] rounded-t-3xl sm:rounded-2xl h-[85vh] flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800">
@@ -329,10 +313,10 @@
                 <div id="settings-kategori" class="space-y-4">
                     <form id="category-form" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm space-y-3">
                         <div class="flex gap-2">
-                            <div class="w-20"><label class="block text-[10px] text-gray-500 mb-1">Ikon</label><select id="cat-icon-input" class="w-full p-2 rounded border outline-none font-bold" style="font-family: 'Font Awesome 6 Free'"><option value="fa-box">&#xf466;</option><option value="fa-shopping-cart">&#xf07a;</option><option value="fa-utensils">&#xf2e7;</option></select></div>
-                            <div class="flex-1"><label class="block text-[10px] text-gray-500 mb-1">Nama Kategori</label><input type="text" id="cat-name-input" class="w-full p-2 rounded border outline-none text-sm"></div>
+                            <div class="w-20"><label class="block text-[10px] text-gray-500 mb-1">Ikon</label><select id="cat-icon-input" class="w-full p-2 rounded border outline-none font-bold" style="font-family: 'Font Awesome 6 Free'"><option value="fa-box">&#xf466;</option><option value="fa-shopping-cart">&#xf07a;</option><option value="fa-utensils">&#xf2e7;</option><option value="fa-wrench">&#xf0ad;</option><option value="fa-bolt">&#xf0e7;</option></select></div>
+                            <div class="flex-1"><label class="block text-[10px] text-gray-500 mb-1">Nama Kategori</label><input type="text" id="cat-name-input" class="w-full p-2 rounded border outline-none text-sm" required></div>
                         </div>
-                        <button type="submit" class="w-full bg-gray-800 text-white font-bold py-2 rounded text-sm shadow-sm">Simpan</button>
+                        <button type="submit" class="w-full bg-gray-800 hover:bg-black text-white font-bold py-2 rounded text-sm shadow-sm transition">Simpan Kategori</button>
                     </form>
                     <div id="category-list" class="space-y-2"></div>
                 </div>
@@ -347,14 +331,14 @@
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA -->
     <script>
-        const APP_VERSION = "2.1.3"; 
-        const API_URL = "https://script.google.com/macros/s/AKfycbyFtnQSZw6ET-MmtIaz68YBqcA3rmIS8h1qS7jjQrmJ1CQ4QxCCOriwGQ_50rG4R0Tw/exec"; 
+        const APP_VERSION = "2.1.5"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycby5qHzPemaYLKqh7VN0yrjkkSDZUc2I_QFrsYqzjxGJM5b4Y2rvM_VWDop-W-vrkGgr/exec"; 
 
         let transactions = []; let categories = []; let deletedIds = []; let deletedCatIds = []; let isSyncing = false; 
         let reimburseHistory = JSON.parse(localStorage.getItem('reimburseHistory')) || []; let currentReceiptBase64 = null;
-        let pendingDeleteId = null;
+        
+        let confirmActionData = null; // Menyimpan data untuk modal konfirmasi (Bisa untuk Hapus TRX atau Hapus CAT)
 
         const defaultCategories = [
             { id: 'c1', name: 'Bahan Baku', icon: 'fa-drumstick-bite', hex: '&#xf6d7;' },
@@ -363,6 +347,123 @@
             { id: 'c4', name: 'Gaji Pegawai', icon: 'fa-users', hex: '&#xf0c0;' },
             { id: 'c5', name: 'Lainnya', icon: 'fa-box', hex: '&#xf466;' }
         ];
+
+        // =========================================================================
+        // ENGINE UTAMA: SINKRONISASI KETAT 3 DETIK (CEK) -> 10 DETIK (VERIFIKASI)
+        // Berlaku untuk: Tambah Trx, Edit Trx, Hapus Trx, Tambah Kategori, Hapus Kategori
+        // =========================================================================
+        async function syncAndSaveData(actionType, payloadData) {
+            const loader = document.getElementById('sync-loader'); 
+            const statusText = document.getElementById('sync-status-text'); 
+            const icon = document.getElementById('sync-loader-icon');
+            loader.classList.remove('hidden'); 
+            setTimeout(() => { loader.style.opacity = '1'; }, 10);
+
+            // 1. Backup State Lokal sebelum diotak-atik
+            const backupTransactions = JSON.parse(JSON.stringify(transactions));
+            const backupCategories = JSON.parse(JSON.stringify(categories));
+
+            try {
+                // TAHAP 1: Cek Perubahan Server (Tunggu 3 Detik)
+                icon.className = "fas fa-sync animate-spin text-4xl text-blue-500";
+                for(let i=3; i>0; i--) { 
+                    statusText.innerText = `Mengecek Spreadsheet... (${i} detik)`; 
+                    await new Promise(r => setTimeout(r, 1000)); 
+                }
+
+                // Tarik data asli dari Cloud
+                const pullSuccess = await pullAndMergeCloudData(true);
+                if (!pullSuccess && API_URL.includes("script.google.com")) {
+                    throw new Error("Gagal mengecek Cloud.");
+                }
+
+                // TAHAP 2: Terapkan Modifikasi ke State (Secara Virtual)
+                if (actionType === 'save_trx') {
+                    const isEdit = payloadData.isEdit; const newData = payloadData.data;
+                    if (isEdit) { const idx = transactions.findIndex(t => String(t.id) === String(newData.id)); if (idx !== -1) transactions[idx] = newData; } else transactions.push(newData);
+                } else if (actionType === 'del_trx') {
+                    transactions = transactions.filter(t => String(t.id) !== String(payloadData.id));
+                    if (!deletedIds.includes(String(payloadData.id))) deletedIds.push(String(payloadData.id));
+                } else if (actionType === 'save_cat') {
+                    categories.push(payloadData.data);
+                } else if (actionType === 'del_cat') {
+                    categories = categories.filter(c => String(c.id) !== String(payloadData.id));
+                    if (!deletedCatIds.includes(String(payloadData.id))) deletedCatIds.push(String(payloadData.id));
+                }
+
+                // Jika Offline / Belum set API URL
+                if(!API_URL || API_URL === "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI" || !API_URL.includes("script.google.com")) { 
+                    localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
+                    init(); renderCategorySettings(); updateCategorySelect();
+                    icon.className = "fas fa-exclamation-triangle text-4xl text-yellow-500 scale-110"; statusText.innerText = "Disimpan di HP saja.";
+                    showToast('Disimpan lokal (API Kosong/Offline)', 'warning'); 
+                    await new Promise(res => setTimeout(res, 1500)); 
+                    loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500);
+                    if(actionType === 'save_trx' || actionType === 'del_trx') cancelEdit();
+                    return; 
+                }
+
+                // TAHAP 3: Kirim Perubahan ke Cloud
+                icon.className = "fas fa-cloud-upload-alt animate-bounce text-4xl text-gurmie-orange";
+                statusText.innerText = "Mengirim Data ke Spreadsheet...";
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ transactions, categories }) });
+
+                // TAHAP 4: Tunggu 10 Detik
+                icon.className = "fas fa-hourglass-half animate-pulse text-4xl text-gurmie-orange";
+                for(let i=10; i>0; i--) { 
+                    statusText.innerText = `Memverifikasi Data... (${i} detik)`; 
+                    await new Promise(r => setTimeout(r, 1000)); 
+                }
+
+                // TAHAP 5: Pengecekan Akhir
+                statusText.innerText = "Mengecek Hasil...";
+                const verifyRes = await fetch(`${API_URL}${API_URL.includes('?') ? '&' : '?'}verify_t=${new Date().getTime()}`, { cache: 'no-store' });
+                const verifyData = await verifyRes.json();
+                
+                const cloudTrx = verifyData.transactions || [];
+                const cloudCat = verifyData.categories || [];
+                let isSuccess = false;
+
+                if (actionType === 'save_trx') isSuccess = cloudTrx.some(t => String(t.id) === String(payloadData.data.id));
+                else if (actionType === 'del_trx') isSuccess = !cloudTrx.some(t => String(t.id) === String(payloadData.id));
+                else if (actionType === 'save_cat') isSuccess = cloudCat.some(c => String(c.id) === String(payloadData.data.id));
+                else if (actionType === 'del_cat') isSuccess = !cloudCat.some(c => String(c.id) === String(payloadData.id));
+
+                if (isSuccess) {
+                    icon.className = "fas fa-check-circle text-5xl text-green-500 scale-110"; statusText.innerText = "Berhasil Disimpan!"; 
+                    showToast('Sukses sinkron dengan Cloud!', 'success');
+                    // Reset array hapus karena Cloud sudah tahu
+                    if(actionType.includes('trx')) { deletedIds = []; localStorage.setItem('deletedIds', '[]'); }
+                    if(actionType.includes('cat')) { deletedCatIds = []; localStorage.setItem('deletedCatIds', '[]'); }
+                    
+                    localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
+                } else {
+                    throw new Error("Gagal Verifikasi 10 Detik");
+                }
+                await new Promise(res => setTimeout(res, 1500));
+
+            } catch (err) {
+                // TAHAP 6 (GAGAL/BENTROK): Rollback & Refresh
+                icon.className = "fas fa-times-circle text-5xl text-red-500 scale-110"; 
+                statusText.innerText = "Gagal Input! Membatalkan Perubahan..."; 
+                showToast('Gagal Input! Me-refresh data dari Server...', 'error');
+                
+                // Rollback lokal ke backup
+                transactions = backupTransactions; categories = backupCategories;
+                
+                // Tarik ulang paksa dari Cloud untuk mencegah bentrok
+                statusText.innerText = "Me-refresh ulang dari Cloud...";
+                await pullAndMergeCloudData(true);
+                localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
+                
+                await new Promise(res => setTimeout(res, 2000));
+            } finally { 
+                init(); renderCategorySettings(); updateCategorySelect();
+                loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500); 
+                if(actionType === 'save_trx') cancelEdit();
+                if(actionType === 'del_cat' || actionType === 'save_cat') document.getElementById('settings-modal').classList.add('active'); // Pastikan modal admin tetap buka
+            }
+        }
 
         function formatCurrencyInput(e) {
             let value = e.target.value.replace(/[^0-9]/g, '');
@@ -423,7 +524,6 @@
                 const trxMap = new Map(); 
                 transactions.forEach(t => trxMap.set(String(t.id), t)); 
                 cloudTrx.forEach(t => { if (!deletedIds.includes(String(t.id))) trxMap.set(String(t.id), t); }); 
-                
                 transactions = Array.from(trxMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 const catMap = new Map(); cloudCat.forEach(c => { if (!deletedCatIds.includes(String(c.id))) catMap.set(String(c.id), c); }); categories.forEach(c => catMap.set(String(c.id), c)); categories = Array.from(catMap.values());
@@ -438,111 +538,62 @@
         const formatDate = (dateStr) => { if(!dateStr) return '-'; const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00'); return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); };
         function getCategoryDetails(catName) { if(catName === 'Suntikan Dana') return { name: catName, icon: 'fa-hand-holding-dollar', hex: '&#xf4c0;' }; if(catName === 'Modal') return { name: catName, icon: 'fa-piggy-bank', hex: '&#xf4d3;' }; const cat = categories.find(c => c.name === catName); return cat ? cat : { name: catName, icon: 'fa-box', hex: '&#xf466;' }; }
 
-        async function saveWithVerification(newData, isEdit) {
-            const loader = document.getElementById('sync-loader'); const statusText = document.getElementById('sync-status-text'); const icon = document.getElementById('sync-loader-icon');
-            loader.classList.remove('hidden'); setTimeout(() => { loader.style.opacity = '1'; }, 10);
+        // MENGUBAH EVENT LISTENER BUTTON HAPUS MODAL (Biar bekerja di PC & HP)
+        document.getElementById('confirm-action-btn').addEventListener('click', () => {
+            if(!confirmActionData) return;
+            const data = confirmActionData;
+            closeConfirmModal();
+            // Lanjut ke Sistem Ketat
+            syncAndSaveData(data.actionType, data.payload);
+        });
 
-            try {
-                icon.className = "fas fa-sync animate-spin text-3xl text-gurmie-orange"; statusText.innerText = "Mengecek Server...";
-                await pullAndMergeCloudData(true); 
-
-                if (isEdit) { const idx = transactions.findIndex(t => String(t.id) === String(newData.id)); if (idx !== -1) transactions[idx] = newData; } else transactions.push(newData);
-                localStorage.setItem('transactions', JSON.stringify(transactions)); init(); 
-
-                // Mencegah error diam-diam jika pengguna lupa mengganti URL API
-                if(!API_URL || API_URL === "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI" || !API_URL.includes("script.google.com")) { 
-                    icon.className = "fas fa-exclamation-triangle text-3xl text-yellow-500";
-                    statusText.innerText = "URL API Belum Dimasukkan!";
-                    showToast('Disimpan lokal (URL API Kosong/Salah)', 'warning'); 
-                    await new Promise(res => setTimeout(res, 2000)); 
-                    return; 
-                }
-
-                statusText.innerText = "Mengirim Data ke Spreadsheet..."; icon.className = "fas fa-cloud-upload-alt animate-bounce text-3xl text-gurmie-orange";
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ transactions, categories }) });
-
-                icon.className = "fas fa-hourglass-half animate-pulse text-3xl text-gurmie-orange";
-                // Waktu tunggu ditambah menjadi 5 detik karena Upload ke Drive memakan waktu lebih lama
-                for(let i=5; i>0; i--) { statusText.innerText = `Memproses Spreadsheet & Drive... (${i} detik)`; await new Promise(res => setTimeout(res, 1000)); }
-
-                const verifyRes = await fetch(`${API_URL}${API_URL.includes('?') ? '&' : '?'}verify_t=${new Date().getTime()}`, { cache: 'no-store' });
-                const verifyData = await verifyRes.json();
-                
-                if ((verifyData.transactions || []).some(t => String(t.id) === String(newData.id))) { icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Selesai!"; showToast('Sukses Disimpan ke Server!', 'success'); } 
-                else { icon.className = "fas fa-exclamation-triangle text-3xl text-yellow-500"; statusText.innerText = "Gagal Cloud! Tersimpan di HP saja."; showToast('Google Apps Script Crash/Error', 'error'); }
-                await new Promise(res => setTimeout(res, 2000));
-            } catch (err) { showToast('Koneksi terganggu.', 'error'); await new Promise(res => setTimeout(res, 1500)); } 
-            finally { loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500); cancelEdit(); }
+        function initiateDeleteTrx(id) {
+            confirmActionData = { actionType: 'del_trx', payload: { id: id } };
+            document.getElementById('confirm-msg').innerText = "Tindakan ini akan menghapus transaksi secara permanen.";
+            showConfirmModal();
         }
 
-        function deleteTransaction(id) {
-            pendingDeleteId = id;
+        function initiateDeleteCat(id) {
+            confirmActionData = { actionType: 'del_cat', payload: { id: id } };
+            document.getElementById('confirm-msg').innerText = "Tindakan ini akan menghapus kategori ini secara permanen.";
+            closeModal('settings-modal'); // Tutup admin bentar
+            showConfirmModal();
+        }
+
+        function showConfirmModal() {
             const modal = document.getElementById('confirm-modal');
             modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.add('opacity-100');
-                modal.querySelector('div').classList.remove('scale-95');
-                modal.querySelector('div').classList.add('scale-100');
-            }, 10);
+            setTimeout(() => { modal.classList.add('opacity-100'); modal.querySelector('div').classList.remove('scale-95'); modal.querySelector('div').classList.add('scale-100'); }, 10);
         }
 
         function closeConfirmModal() {
             const modal = document.getElementById('confirm-modal');
-            modal.classList.remove('opacity-100');
-            modal.querySelector('div').classList.remove('scale-100');
-            modal.querySelector('div').classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); pendingDeleteId = null; }, 300);
+            modal.classList.remove('opacity-100'); modal.querySelector('div').classList.remove('scale-100'); modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); confirmActionData = null; }, 300);
         }
-
-        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-            if(!pendingDeleteId) return;
-            const id = pendingDeleteId;
-            closeConfirmModal();
-            
-            const loader = document.getElementById('sync-loader'); const statusText = document.getElementById('sync-status-text'); const icon = document.getElementById('sync-loader-icon');
-            loader.classList.remove('hidden'); setTimeout(() => { loader.style.opacity = '1'; }, 10);
-
-            try {
-                icon.className = "fas fa-trash-alt animate-bounce text-3xl text-red-500"; statusText.innerText = "Menghapus...";
-                await pullAndMergeCloudData(true);
-                transactions = transactions.filter(t => String(t.id) !== String(id));
-                if (!deletedIds.includes(String(id))) deletedIds.push(String(id)); localStorage.setItem('deletedIds', JSON.stringify(deletedIds));
-                localStorage.setItem('transactions', JSON.stringify(transactions)); init(); 
-
-                if(!API_URL || API_URL === "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI" || !API_URL.includes("script.google.com")) { showToast('Dihapus lokal.', 'success'); return; }
-
-                statusText.innerText = "Menghapus di Cloud...";
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ transactions, categories }) });
-                await new Promise(res => setTimeout(res, 2000));
-                icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Terhapus Permanen!"; showToast('Data Dihapus!', 'success');
-                await new Promise(res => setTimeout(res, 1000));
-            } catch (err) { showToast('Dihapus lokal (Offline).', 'error'); await new Promise(res => setTimeout(res, 1500)); } 
-            finally { loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500); }
-        });
 
         async function forceSync() { 
             if(isSyncing) return; isSyncing = true;
             const loader = document.getElementById('sync-loader'); const statusText = document.getElementById('sync-status-text'); const icon = document.getElementById('sync-loader-icon');
             loader.classList.remove('hidden'); setTimeout(() => { loader.style.opacity = '1'; }, 10);
-            icon.className = "fas fa-cloud-download-alt animate-bounce text-3xl text-blue-500"; statusText.innerText = "Membaca Cloud...";
+            icon.className = "fas fa-cloud-download-alt animate-bounce text-4xl text-blue-500"; statusText.innerText = "Menarik Data Cloud...";
 
             try {
                 if(!API_URL || API_URL === "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI" || !API_URL.includes("script.google.com")) throw new Error("API Kosong");
                 const response = await fetch(`${API_URL}${API_URL.includes('?')?'&':'?'}_t=${new Date().getTime()}`, { method: 'GET', cache: 'no-store' });
                 if (!response.ok) throw new Error("Error HTTP"); const cloudData = await response.json();
                 
-                icon.className = "fas fa-sync animate-spin text-3xl text-gurmie-orange"; statusText.innerText = "Update Lokal (Cloud Menang)...";
+                icon.className = "fas fa-sync animate-spin text-4xl text-gurmie-orange"; statusText.innerText = "Memperbarui Data...";
                 transactions = cloudData.transactions || []; categories = cloudData.categories || defaultCategories;
                 deletedIds = []; deletedCatIds = []; localStorage.setItem('deletedIds', '[]'); localStorage.setItem('deletedCatIds', '[]');
                 localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
                 init(); renderCategorySettings(); updateCategorySelect();
                 
-                icon.className = "fas fa-check-circle text-4xl text-green-500 scale-110"; statusText.innerText = "Data disamakan!"; showToast('Sukses Tarik Data', 'success');
+                icon.className = "fas fa-check-circle text-5xl text-green-500 scale-110"; statusText.innerText = "Data disamakan!"; showToast('Sukses Tarik Data', 'success');
                 await new Promise(r => setTimeout(r, 1500));
             } catch (err) {
-                icon.className = "fas fa-dumpster-fire text-4xl text-red-500 scale-110"; statusText.innerText = "Gagal! Membersihkan Lokal...";
-                transactions = []; localStorage.removeItem('transactions'); if(categories.length===0) categories = defaultCategories; init();
-                showToast('GAGAL! Data Lokal dibersihkan.', 'error'); await new Promise(r => setTimeout(r, 2000));
+                icon.className = "fas fa-dumpster-fire text-5xl text-red-500 scale-110"; statusText.innerText = "Gagal! Data Cloud bermasalah.";
+                showToast('Gagal Tarik Data Cloud.', 'error'); await new Promise(r => setTimeout(r, 2000));
             } finally { isSyncing = false; loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500); }
         }
 
@@ -581,7 +632,6 @@
                     const canvas = document.createElement('canvas'); const max = 800; let scale = Math.min(max / img.width, max / img.height, 1);
                     canvas.width = img.width * scale; canvas.height = img.height * scale; 
                     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height); 
-                    // Gambar akan dikompres untuk menghemat kuota jaringan saat dikirim
                     currentReceiptBase64 = canvas.toDataURL('image/jpeg', 0.6); 
                     document.getElementById('upload-ui-main').classList.add('hidden'); document.getElementById('receipt-preview').src = currentReceiptBase64; document.getElementById('preview-container').classList.remove('hidden');
                 }; img.src = e.target.result;
@@ -607,7 +657,7 @@
             if (typeVal === 'income') {
                 finalGrandTotal = cleanNumber(document.getElementById('nominal-input').value);
                 if (finalGrandTotal <= 0) { showToast('Nominal salah!', 'error'); return; }
-                itemsData.push({ name: 'Pemasukan', qty: 1, unit: '-', price: finalGrandTotal, total: finalGrandTotal });
+                itemsData.push({ name: 'Pemasukan: ' + catVal, qty: 1, unit: '-', price: finalGrandTotal, total: finalGrandTotal });
             } else {
                 const itemRows = document.querySelectorAll('.item-row'); if (itemRows.length === 0) return showToast('Isi barang!', 'error');
                 let isValid = true; itemRows.forEach(row => {
@@ -627,7 +677,11 @@
                     reimburseData = { active: true, method: finalMethod, account: finalAccount, status: editId ? (transactions.find(t=>String(t.id)===String(editId))?.reimburse?.status || 'Belum Ditransfer') : 'Belum Ditransfer' };
                 }
             }
-            saveWithVerification({ id: editId || generateID(), type: typeVal, amount: finalGrandTotal, date: document.getElementById('date').value, category: catVal, note: document.getElementById('note').value.trim(), receipt: currentReceiptBase64, items: itemsData, reimburse: reimburseData }, !!editId);
+            // Panggi Sistem Ketat
+            syncAndSaveData('save_trx', {
+                isEdit: !!editId,
+                data: { id: editId || generateID(), type: typeVal, amount: finalGrandTotal, date: document.getElementById('date').value, category: catVal, note: document.getElementById('note').value.trim(), receipt: currentReceiptBase64, items: itemsData, reimburse: reimburseData }
+            });
         });
 
         function renderList() {
@@ -637,14 +691,12 @@
             transactions.forEach(trx => {
                 const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category); 
                 
-                // Cek apakah ini Base64 (Lokal) atau Link Google Drive (Cloud)
-                const isCloudReceipt = trx.receipt && trx.receipt.startsWith('http');
-                let receiptIconHTML = '';
-                if (trx.receipt) {
-                    if (isCloudReceipt) {
-                        receiptIconHTML = '<i class="fas fa-cloud text-blue-500 ml-1" title="Disimpan di Google Drive"></i>';
-                    } else {
-                        receiptIconHTML = '<i class="fas fa-receipt text-orange-500 ml-1" title="Menunggu Sinkronisasi Server"></i>';
+                // MENGUBAH TAMPILAN RIWAYAT MENJADI NAMA BARANG
+                let displayTitle = trx.category; // Default
+                if (trx.items && trx.items.length > 0) {
+                    displayTitle = trx.items[0].name;
+                    if (trx.items.length > 1) {
+                        displayTitle += ` <span class="text-[10px] text-gray-400 font-normal">(+${trx.items.length - 1} lainnya)</span>`;
                     }
                 }
 
@@ -654,15 +706,15 @@
                 <div class="flex items-center gap-3 overflow-hidden pointer-events-none">
                     <div class="w-10 h-10 rounded-full flex-shrink-0 bg-gray-50 dark:bg-black/50 flex items-center justify-center border text-gurmie-orange"><i class="fas ${catDetails.icon}"></i></div>
                     <div class="min-w-0">
-                        <p class="text-sm font-bold truncate">${trx.category} ${receiptIconHTML}</p>
-                        <p class="text-xs text-gray-500 truncate">${formatDate(trx.date)} ${!isInc && trx.items ? `· ${trx.items.length} item` : ''}</p>
+                        <p class="text-sm font-bold truncate">${displayTitle} ${trx.receipt ? '<i class="fas fa-receipt text-orange-500 ml-1"></i>' : ''}</p>
+                        <p class="text-[10px] font-bold text-gray-400 truncate uppercase mt-0.5">${trx.category} · ${formatDate(trx.date)}</p>
                     </div>
                 </div>
                 <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-2 sm:pt-0">
                     <span class="font-mono text-sm sm:text-base font-bold ${isInc?'text-green-600':'text-red-600'} truncate text-right">${isInc?'+':'-'}${formatRupiah(trx.amount)}</span>
                     <div class="flex gap-1.5" onclick="event.stopPropagation()">
                         <button onclick="editTransaction('${trx.id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 w-9 h-9 rounded-lg border transition"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteTransaction('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 w-9 h-9 rounded-lg border transition"><i class="fas fa-trash"></i></button>
+                        <button onclick="initiateDeleteTrx('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 w-9 h-9 rounded-lg border transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>`; listEl.appendChild(el);
             });
@@ -671,11 +723,8 @@
         function showTransactionDetails(id) {
             const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return; const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category);
             let html = `<div class="space-y-4"><div class="flex justify-between items-center border-b pb-3"><div><p class="text-[10px] text-gray-500 uppercase">Kategori</p><p class="font-bold text-lg"><i class="fas ${catDetails.icon} mr-2"></i>${trx.category}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 uppercase">Total</p><p class="font-mono font-bold text-xl ${isInc?'text-green-600':'text-red-600'} break-all max-w-[150px] leading-tight">${isInc?'+':'-'}${formatRupiah(trx.amount)}</p></div></div>`;
-            
-            // Gambar otomatis memuat format Base64 lokal ATAU Link Google Drive secara langsung
             if(trx.receipt) html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded border">`;
-            
-            html += `<div class="mt-4 flex gap-2 pt-4 border-t"><button onclick="closeModal('detail-modal'); setTimeout(()=>editTransaction('${trx.id}'), 300);" class="flex-1 py-2 bg-blue-50 text-blue-600 font-bold rounded border transition"><i class="fas fa-edit"></i> Edit</button><button onclick="closeModal('detail-modal'); setTimeout(()=>deleteTransaction('${trx.id}'), 300);" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded border transition"><i class="fas fa-trash"></i> Hapus</button></div></div>`; 
+            html += `<div class="mt-4 flex gap-2 pt-4 border-t"><button onclick="closeModal('detail-modal'); setTimeout(()=>editTransaction('${trx.id}'), 300);" class="flex-1 py-2 bg-blue-50 text-blue-600 font-bold rounded border transition"><i class="fas fa-edit"></i> Edit</button><button onclick="closeModal('detail-modal'); setTimeout(()=>initiateDeleteTrx('${trx.id}'), 300);" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded border transition"><i class="fas fa-trash"></i> Hapus</button></div></div>`; 
             document.getElementById('modal-body').innerHTML = html; document.getElementById('detail-modal').classList.add('active');
         }
 
@@ -696,9 +745,20 @@
         function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
         function openSettings(defaultTab = 'kategori') { switchSettingsTab(defaultTab); renderCategorySettings(); document.getElementById('settings-modal').classList.add('active'); }
         function switchSettingsTab(tab) { const inact = "px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500"; const act = "px-4 py-3 text-sm font-bold border-b-2 border-gurmie-red text-gurmie-red"; ['tab-kategori', 'tab-reimburse', 'tab-data'].forEach(id => document.getElementById(id).className = inact); ['settings-kategori', 'settings-reimburse', 'settings-data'].forEach(id => document.getElementById(id).classList.add('hidden')); if(tab === 'kategori') { document.getElementById('tab-kategori').className = act; document.getElementById('settings-kategori').classList.remove('hidden'); } else if (tab === 'reimburse') { document.getElementById('tab-reimburse').className = act; document.getElementById('settings-reimburse').classList.remove('hidden'); renderReimburseAdminList(); } else if (tab === 'data') { document.getElementById('tab-data').className = act; document.getElementById('settings-data').classList.remove('hidden'); } }
-        function renderCategorySettings() { const listEl = document.getElementById('category-list'); listEl.innerHTML = ''; categories.forEach(cat => { const item = document.createElement('div'); item.className = 'flex justify-between items-center p-3 bg-white rounded-lg border'; item.innerHTML = `<div class="flex items-center gap-3"><i class="fas ${cat.icon} text-gray-500"></i><span class="text-sm font-medium">${cat.name}</span></div><button onclick="deleteCategorySettings('${cat.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>`; listEl.appendChild(item); }); }
-        document.getElementById('category-form').addEventListener('submit', (e) => { e.preventDefault(); const name = document.getElementById('cat-name-input').value; const icon = document.getElementById('cat-icon-input').value; if(name) { categories.push({ id: 'c_' + generateID(), name, icon, hex: '' }); localStorage.setItem('categories', JSON.stringify(categories)); renderCategorySettings(); updateCategorySelect(); document.getElementById('cat-name-input').value = ''; } });
-        function deleteCategorySettings(id) { categories = categories.filter(c => c.id !== id); localStorage.setItem('categories', JSON.stringify(categories)); renderCategorySettings(); updateCategorySelect(); }
+        function renderCategorySettings() { const listEl = document.getElementById('category-list'); listEl.innerHTML = ''; categories.forEach(cat => { const item = document.createElement('div'); item.className = 'flex justify-between items-center p-3 bg-white rounded-lg border'; item.innerHTML = `<div class="flex items-center gap-3"><i class="fas ${cat.icon} text-gray-500"></i><span class="text-sm font-medium">${cat.name}</span></div><button onclick="initiateDeleteCat('${cat.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded"><i class="fas fa-trash"></i></button>`; listEl.appendChild(item); }); }
+        
+        // Form Tambah Kategori (Menggunakan Sistem Ketat)
+        document.getElementById('category-form').addEventListener('submit', (e) => { 
+            e.preventDefault(); 
+            const name = document.getElementById('cat-name-input').value; 
+            const icon = document.getElementById('cat-icon-input').value; 
+            if(name) { 
+                document.getElementById('settings-modal').classList.remove('active'); // Tutup sementara biar ngga numpuk loadingnya
+                syncAndSaveData('save_cat', { data: { id: 'c_' + generateID(), name, icon, hex: '' } });
+                document.getElementById('cat-name-input').value = ''; 
+            } 
+        });
+        
         function renderReimburseAdminList() { const listEl = document.getElementById('reimburse-list'); listEl.innerHTML = ''; transactions.filter(t => t.reimburse && t.reimburse.active).forEach(trx => { const el = document.createElement('div'); el.className = `p-3 bg-white rounded-lg border shadow-sm`; el.innerHTML = `<p class="font-bold">${trx.category} - ${formatRupiah(trx.amount)}</p><p class="text-xs">${trx.reimburse.method}: ${trx.reimburse.account}</p>`; listEl.appendChild(el); }); }
     </script>
 </body>
