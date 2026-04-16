@@ -27,8 +27,12 @@
         .list-enter { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        .highlight-ocr { animation: pulseOcr 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulseOcr { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); } }
+        /* Animasi Nafas untuk Logo Pemuatan */
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0px 0px 10px rgba(249, 115, 22, 0.2)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0px 0px 20px rgba(249, 115, 22, 0.6)); }
+        }
+        .animate-breathe { animation: breathe 2s ease-in-out infinite; }
 
         .loader-dots div { animation-timing-function: cubic-bezier(0, 1, 1, 0); }
         .loader-dots div:nth-child(1) { left: 8px; animation: loader-dots1 0.6s infinite; }
@@ -39,14 +43,7 @@
         @keyframes loader-dots3 { 0% { transform: scale(1); } 100% { transform: scale(0); } }
         @keyframes loader-dots2 { 0% { transform: translate(0, 0); } 100% { transform: translate(24px, 0); } }
         
-        /* Animasi kilauan AI */
-        .sparkle-text {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            animation: shine 3s linear infinite;
-        }
+        .sparkle-text { background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6); background-size: 200% auto; color: transparent; -webkit-background-clip: text; animation: shine 3s linear infinite; }
         @keyframes shine { to { background-position: 200% center; } }
     </style>
     <script>
@@ -60,17 +57,30 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors pb-24 selection:bg-gurmie-orange selection:text-white antialiased">
 
+    <!-- LAYAR LOADING AWAL (FULL SCREEN) -->
+    <div id="initial-loader" class="fixed inset-0 z-[9999] bg-white dark:bg-gray-900 flex flex-col items-center justify-center transition-opacity duration-500">
+        <!-- Menggunakan link gambar langsung (Google Drive direct link) -->
+        <img src="https://drive.google.com/uc?export=view&id=16cl9zSQOLImYx5O5R8677EfGpGzkwWtT" alt="Logo" class="w-32 h-32 md:w-40 md:h-40 object-contain animate-breathe mb-6">
+        <h2 class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">Gurmie<span class="text-gurmie-red">Finance</span></h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium animate-pulse">Menghubungkan ke Cloud...</p>
+    </div>
+
     <!-- HEADER -->
     <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 transition-colors">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gurmie-orange to-gurmie-red flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gurmie-orange to-gurmie-red flex items-center justify-center text-white shadow-lg shadow-orange-500/30 relative">
                     <i class="fas fa-wallet text-sm"></i>
+                    <!-- Indikator kedip saat auto-sync -->
+                    <span id="auto-sync-dot" class="absolute -top-1 -right-1 flex h-3 w-3 hidden">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
                 </div>
                 <h1 class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">Gurmie<span class="text-gurmie-red">Finance</span></h1>
             </div>
             <div class="flex items-center gap-2">
-                <button id="btn-sync" onclick="forceSync()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-blue-500 transition shadow-inner border border-gray-200 dark:border-gray-700" title="Sinkronisasi ke Cloud">
+                <button id="btn-sync" onclick="forceSync()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-blue-500 transition shadow-inner border border-gray-200 dark:border-gray-700" title="Sinkronisasi Manual">
                     <i class="fas fa-sync-alt"></i>
                 </button>
                 <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -563,7 +573,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycby0NYrHPy1Q4f23TlTjAMaUvD2dS2BhaxQHXNFKUmS4d30Lu6GMpwFivPA9WIVUThVb/exec"; // Pertahankan script Google Sheets Anda
+        const API_URL = "https://script.google.com/macros/s/AKfycbzx8sApc6sV6ZUXNIXgyaOI54Aa8_vmfs3tbgefhkIfk8eJhC50TMdCHfTZTbg2J8iG/exec"; // Pertahankan script Google Sheets Anda
         const geminiApiKey = ""; // API Key Gemini
 
         // --- FUNGSI HELPER GEMINI ---
@@ -589,10 +599,12 @@
         }
 
         let transactions = []; 
-        let categories = []; // Akan ditimpa oleh data dari Cloud atau Local Storage
-        let deletedIds = JSON.parse(localStorage.getItem('deletedIds')) || []; // Menyimpan ID transaksi yang dihapus
-        let deletedCatIds = JSON.parse(localStorage.getItem('deletedCatIds')) || []; // Menyimpan ID kategori yang dihapus
+        let categories = []; 
+        let deletedIds = JSON.parse(localStorage.getItem('deletedIds')) || []; 
+        let deletedCatIds = JSON.parse(localStorage.getItem('deletedCatIds')) || []; 
         
+        let isSyncing = false; // Flag untuk mencegah bentrok interval
+
         const defaultCategories = [
             { id: 'c1', name: 'Bahan Baku', icon: 'fa-drumstick-bite', hex: '&#xf6d7;' },
             { id: 'c2', name: 'Operasional', icon: 'fa-store', hex: '&#xf54e;' },
@@ -611,7 +623,6 @@
         let currentCatSummary = {}; 
         let currentAnalyticsSummary = { inc: 0, exp: 0, count: 0 };
 
-        // Fungsi Parser & Pembersih
         function parseExcelDate(val) {
             if (val === undefined || val === null || val === '') return null;
             if (typeof val === 'number') {
@@ -652,7 +663,7 @@
             return cat ? cat : { name: catName, icon: 'fa-box', hex: '&#xf466;' }; 
         }
 
-        // 2. FUNGSI LOAD DATA (Kini memuat Transaksi & Kategori)
+        // --- SISTEM LOAD AWAL ---
         window.addEventListener('load', async () => {
             setTheme(savedTheme);
             document.getElementById('date').valueAsDate = new Date();
@@ -661,48 +672,58 @@
             toggleFormMode(); 
             
             await fetchFromCloud(); 
+            
+            // HILANGKAN LAYAR LOADING SETELAH SELESAI MEMUAT
+            setTimeout(() => {
+                const loader = document.getElementById('initial-loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.classList.add('hidden'), 500); // Tunggu transisi CSS selesai
+            }, 500);
+
+            // JALANKAN INTERVAL SINKRONISASI DIAM-DIAM SETIAP 5 DETIK
+            setInterval(silentSyncBackground, 5000);
         });
 
-        async function fetchFromCloud() {
-            showToast('Memuat data dari Cloud...', 'warning');
+        // FUNGSI INTI UNTUK MENGAMBIL DAN MENGGABUNGKAN DATA (DARI CLOUD -> LOCAL)
+        async function pullAndMergeCloudData() {
+            if(!API_URL.includes("script.google.com")) return false;
             try {
-                if(!API_URL.includes("script.google.com")) throw new Error("URL API belum diset.");
-                const response = await fetch(API_URL);
-                const data = await response.json();
+                const getRes = await fetch(API_URL);
+                const cloudData = await getRes.json();
+                if (cloudData.error) return false;
+
+                let cloudTrx = cloudData.transactions || (Array.isArray(cloudData) ? cloudData : []);
+                let cloudCat = cloudData.categories || defaultCategories;
                 
-                if (data.error) {
-                    showToast('Gagal memuat: ' + data.error, 'error');
-                    fallbackLocalData();
-                } else {
-                    // Cek jika data memiliki format baru (ada transactions & categories)
-                    if (data.transactions || data.categories) {
-                        if (data.transactions && Array.isArray(data.transactions)) {
-                            transactions = data.transactions;
-                            localStorage.setItem('transactions', JSON.stringify(transactions));
-                        }
-                        if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
-                            categories = data.categories;
-                            localStorage.setItem('categories', JSON.stringify(categories));
-                        } else {
-                            // Jika sheet categories kosong, pakai default
-                            categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
-                        }
-                        showToast('Berhasil memuat data!', 'success');
-                    } else if(Array.isArray(data)) {
-                        // Kompatibilitas dengan respons lama (Hanya Array Transaksi)
-                        transactions = data;
-                        localStorage.setItem('transactions', JSON.stringify(transactions));
-                        categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
-                        showToast('Memuat data (Versi Lama)', 'warning');
-                    } else {
-                        fallbackLocalData();
-                    }
-                }
+                // GABUNGKAN TRANSAKSI
+                const trxMap = new Map();
+                cloudTrx.forEach(t => { if (!deletedIds.includes(String(t.id))) trxMap.set(String(t.id), t); });
+                transactions.forEach(t => trxMap.set(String(t.id), t));
+                transactions = Array.from(trxMap.values());
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // GABUNGKAN KATEGORI
+                const catMap = new Map();
+                cloudCat.forEach(c => { if (!deletedCatIds.includes(String(c.id))) catMap.set(String(c.id), c); });
+                categories.forEach(c => catMap.set(String(c.id), c));
+                categories = Array.from(catMap.values());
+
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('categories', JSON.stringify(categories));
+
+                return true;
+            } catch(err) {
+                return false;
+            }
+        }
+
+        async function fetchFromCloud() {
+            try {
+                const success = await pullAndMergeCloudData();
+                if (!success) fallbackLocalData();
             } catch (err) {
-                showToast('Koneksi Google Sheets gagal. Menggunakan data lokal.', 'error');
                 fallbackLocalData();
             }
-            
             init();
             renderCategorySettings();
             updateCategorySelect();
@@ -713,63 +734,55 @@
             categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
         }
 
-        // 3. FUNGSI SIMPAN KE CLOUD DENGAN SMART MERGE
-        async function syncToCloud(isSilent = true) { 
+        // --- BACKGROUND SILENT SYNC SETIAP 5 DETIK ---
+        // Fungsi ini HANYA menarik data dari cloud tanpa merefresh form Anda, jadi aman
+        async function silentSyncBackground() {
+            if(isSyncing || !API_URL.includes("script.google.com")) return;
+            isSyncing = true;
+
+            // Nyalakan titik hijau berkedip di logo dompet (opsional, penanda sync jalan)
+            const dot = document.getElementById('auto-sync-dot');
+            if(dot) dot.classList.remove('hidden');
+
+            const success = await pullAndMergeCloudData();
+            
+            if(success) {
+                // Hanya me-refresh daftar yang ada di bawah, tidak me-reset <form>
+                renderList();
+                handleDashFilterChange();
+                renderCategorySettings();
+                // Matikan titik setelah selesai
+                if(dot) dot.classList.add('hidden');
+            }
+            
+            isSyncing = false;
+        }
+
+        // --- PUSH KE CLOUD (DIPANGGIL SAAT KLIK SIMPAN) ---
+        async function syncToCloud(showNotif = true) { 
+            if(isSyncing) return; // Cegah double request
+            isSyncing = true;
+
             try { 
                 const btnSync = document.getElementById('btn-sync');
                 if(btnSync) btnSync.classList.add('animate-spin', 'text-blue-500');
 
-                if(API_URL.includes("script.google.com")) {
-                    // 1. Ambil data terbaru dari cloud sebelum menimpa
-                    try {
-                        const getRes = await fetch(API_URL);
-                        const cloudData = await getRes.json();
-                        if (!cloudData.error) {
-                            let cloudTrx = cloudData.transactions || (Array.isArray(cloudData) ? cloudData : []);
-                            let cloudCat = cloudData.categories || defaultCategories;
-                            
-                            // 2. Gabungkan data (Mencegah data dari HP lain hilang)
-                            const trxMap = new Map();
-                            cloudTrx.forEach(t => {
-                                // Hanya masukkan dari cloud jika tidak pernah kita hapus
-                                if (!deletedIds.includes(String(t.id))) trxMap.set(String(t.id), t);
-                            });
-                            // Data lokal menimpa/menambah data cloud
-                            transactions.forEach(t => trxMap.set(String(t.id), t));
-                            transactions = Array.from(trxMap.values());
-                            
-                            const catMap = new Map();
-                            cloudCat.forEach(c => {
-                                if (!deletedCatIds.includes(String(c.id))) catMap.set(String(c.id), c);
-                            });
-                            categories.forEach(c => catMap.set(String(c.id), c));
-                            categories = Array.from(catMap.values());
-                        }
-                    } catch(err) {
-                        console.warn("Gagal mengambil data terbaru sebelum sync", err);
-                    }
-                }
-
-                // 3. Simpan hasil gabungan ke local storage
-                localStorage.setItem('transactions', JSON.stringify(transactions)); 
-                localStorage.setItem('categories', JSON.stringify(categories)); 
+                // Tarik dulu yang terbaru agar data di HP lain tidak terhapus
+                await pullAndMergeCloudData();
                 
-                // Refresh UI untuk menampilkan data gabungan (Data dari HP lain akan langsung muncul!)
-                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Update tampilan dengan data gabungan
                 renderList();
                 handleDashFilterChange();
                 renderCategorySettings();
                 
                 if(!API_URL.includes("script.google.com")) {
                     if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
+                    isSyncing = false;
                     return;
                 }
 
-                // 4. Kirim kembali data yang sudah lengkap ke Cloud
-                const payload = {
-                    transactions: transactions,
-                    categories: categories
-                };
+                // Baru kita dorong ke cloud
+                const payload = { transactions: transactions, categories: categories };
 
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -781,20 +794,22 @@
                 if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
 
                 if (result === "Success") {
-                    if (!isSilent) showToast('Sinkronisasi Cloud Berhasil!', 'success');
+                    if (showNotif) showToast('Sinkronisasi Cloud Berhasil!', 'success');
                 } else {
-                    if (!isSilent) showToast('Gagal Cloud: ' + result, 'error');
+                    if (showNotif) showToast('Gagal Cloud: ' + result, 'error');
                 }
             } catch (e) { 
                 const btnSync = document.getElementById('btn-sync');
                 if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
-                if (!isSilent) showToast('Koneksi terganggu saat sinkronisasi.', 'error');
-            } 
+                if (showNotif) showToast('Koneksi terganggu saat sinkronisasi.', 'error');
+            } finally {
+                isSyncing = false;
+            }
         }
 
         function forceSync() {
             showToast('Menyinkronkan ke Cloud...', 'warning');
-            syncToCloud(false);
+            syncToCloud(true);
         }
 
         // --- MANAJEMEN FILTER DASHBOARD ---
@@ -920,7 +935,7 @@
             document.getElementById('transaction-form').reset(); document.getElementById('items-container').innerHTML = ''; addEmptyRow(); document.querySelector('input[name="type"][value="income"]').checked = true; toggleFormMode(); toggleReimburseFields(); removeReceipt(); 
             
             init(); 
-            // Sync dan berikan notifikasi (isSilent = false)
+            // Langsung Push ke Cloud saat user klik simpan
             syncToCloud(false);
         });
 
@@ -957,7 +972,7 @@
                 const el = document.createElement('div'); el.className = `p-3 bg-white dark:bg-gray-800/40 rounded-lg border ${isPaid ? 'border-gray-200 dark:border-gray-700 opacity-60' : 'border-orange-200 dark:border-gurmie-orange/50'} shadow-sm transition-all`; el.innerHTML = `<div class="flex justify-between items-start mb-2"><div><p class="text-xs text-gray-500 dark:text-gray-400">${formatDate(trx.date)} - <span class="font-bold">${trx.category}</span></p><p class="text-sm font-bold mt-1">${formatRupiah(trx.amount)} ${statusBadge}</p></div>${btnAction}</div><div class="bg-gray-50 dark:bg-gray-900/50 p-2 rounded text-xs border border-gray-100 dark:border-gray-800"><p class="text-gray-600 dark:text-gray-400"><i class="fas fa-university w-4"></i> ${trx.reimburse.method}</p><p class="font-mono font-bold mt-1"><i class="fas fa-money-check w-4 text-gray-400"></i> ${trx.reimburse.account}</p></div>`; listEl.appendChild(el);
             });
         }
-        function toggleReimburseStatus(id) { const idx = transactions.findIndex(t => String(t.id) === String(id)); if(idx > -1 && transactions[idx].reimburse) { transactions[idx].reimburse.status = transactions[idx].reimburse.status === 'Sudah Ditransfer' ? 'Belum Ditransfer' : 'Sudah Ditransfer'; renderReimburseAdminList(); renderList(); handleDashFilterChange(); showToast(`Status: ${transactions[idx].reimburse.status}`, 'success'); syncToCloud(); } }
+        function toggleReimburseStatus(id) { const idx = transactions.findIndex(t => String(t.id) === String(id)); if(idx > -1 && transactions[idx].reimburse) { transactions[idx].reimburse.status = transactions[idx].reimburse.status === 'Sudah Ditransfer' ? 'Belum Ditransfer' : 'Sudah Ditransfer'; renderReimburseAdminList(); renderList(); handleDashFilterChange(); showToast(`Status: ${transactions[idx].reimburse.status}`, 'success'); syncToCloud(false); } }
 
 
         // --- IMPORT / EXPORT EXCEL ---
@@ -1050,7 +1065,7 @@
                 if(validImportDataBuffer.length === 0) { showToast("Tidak ada data valid.", "warning"); resetImportUI(); return; } 
                 transactions = [...transactions, ...validImportDataBuffer]; 
                 init(); 
-                syncToCloud();
+                syncToCloud(false);
                 showToast(`Import ${validTrxCount} transaksi berhasil!`, "success"); 
                 resetImportUI(); 
                 closeModal('settings-modal'); 
@@ -1429,7 +1444,7 @@
                 }
 
                 init(); 
-                syncToCloud(true);
+                syncToCloud(false);
                 showToast('Dihapus!'); 
             } 
         }
