@@ -52,15 +52,15 @@
         <div id="version-badge" class="mt-4 text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-500 px-3 py-1 rounded-full font-mono"></div>
     </div>
 
-    <!-- LAYAR LOADING SINKRONISASI (SISTEM KETAT) -->
+    <!-- LAYAR LOADING SINKRONISASI (SISTEM KETAT - 3 RETRIES) -->
     <div id="sync-loader" class="fixed inset-0 z-[9999] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-300 hidden opacity-0">
         <div class="relative w-24 h-24 flex items-center justify-center mb-6">
             <div class="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-800"></div>
             <div class="absolute inset-0 rounded-full border-4 border-gurmie-orange border-t-transparent animate-spin"></div>
             <i id="sync-loader-icon" class="fas fa-sync text-3xl text-gurmie-orange"></i>
         </div>
-        <h2 class="text-xl font-extrabold tracking-tight text-gray-800 dark:text-white mb-2">Harap Menunggu</h2>
-        <p id="sync-status-text" class="text-sm text-gray-600 dark:text-gray-400 font-bold text-center px-6 transition-all duration-300">Sistem sedang bekerja...</p>
+        <h2 class="text-xl font-extrabold tracking-tight text-gray-800 dark:text-white mb-2">Sistem Sedang Memproses</h2>
+        <p id="sync-status-text" class="text-sm text-gray-600 dark:text-gray-400 font-bold text-center px-6 transition-all duration-300">Harap menunggu...</p>
     </div>
 
     <!-- HEADER -->
@@ -196,7 +196,7 @@
                             <div class="relative w-full h-32 bg-gray-900 rounded-lg overflow-hidden group">
                                 <img id="receipt-preview" src="" class="w-full h-full object-cover opacity-80 transition-opacity">
                                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button type="button" onclick="removeReceipt()" class="bg-red-500 text-white w-10 h-10 rounded-full hover:bg-red-600 shadow-lg"><i class="fas fa-trash"></i></button>
+                                    <button type="button" onclick="removeReceipt()" class="bg-red-500 text-white w-10 h-10 rounded-full hover:bg-red-600 shadow-lg"><i class="fas fa-trash pointer-events-none"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -289,7 +289,7 @@
         <div class="bg-white dark:bg-gray-900 w-full sm:w-[450px] rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800">
                 <h3 class="font-bold text-lg"><i class="fas fa-receipt text-gray-400 mr-2"></i>Detail Transaksi</h3>
-                <button onclick="closeModal('detail-modal')" class="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:text-gray-800"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal('detail-modal')" class="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:text-gray-800"><i class="fas fa-times pointer-events-none"></i></button>
             </div>
             <div id="modal-body" class="p-5 overflow-y-auto custom-scrollbar flex-1"></div>
         </div>
@@ -304,8 +304,8 @@
             <h3 class="font-bold text-xl mb-2 text-gray-900 dark:text-white">Hapus Data?</h3>
             <p id="confirm-msg" class="text-sm text-gray-500 dark:text-gray-400 mb-6">Tindakan ini permanen.</p>
             <div class="flex gap-3 w-full">
-                <button onclick="closeConfirmModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition">Batal</button>
-                <button id="confirm-action-btn" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition shadow-lg shadow-red-500/30">Ya, Hapus</button>
+                <button onclick="closeConfirmModal()" type="button" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition">Batal</button>
+                <button id="confirm-action-btn" type="button" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition shadow-lg shadow-red-500/30">Ya, Hapus</button>
             </div>
         </div>
     </div>
@@ -315,7 +315,7 @@
         <div class="bg-white dark:bg-gray-900 w-full sm:w-[500px] rounded-t-3xl sm:rounded-2xl h-[85vh] flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800">
                 <h3 class="font-bold text-lg"><i class="fas fa-cog text-gurmie-red mr-2"></i>Admin Area</h3>
-                <button onclick="closeModal('settings-modal')" class="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:text-gray-800"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal('settings-modal')" class="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:text-gray-800"><i class="fas fa-times pointer-events-none"></i></button>
             </div>
             
             <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto custom-scrollbar">
@@ -339,7 +339,7 @@
                 <div id="settings-data" class="hidden space-y-6">
                     <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-red-200">
                         <h4 class="text-xs font-bold text-red-600 uppercase mb-2">Mode Pemecahan Masalah</h4>
-                        <button onclick="superHardResetApp()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold flex justify-center gap-2"><i class="fas fa-power-off"></i> Hard Reset Aplikasi</button>
+                        <button type="button" onclick="superHardResetApp()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold flex justify-center gap-2"><i class="fas fa-power-off pointer-events-none"></i> Hard Reset Aplikasi</button>
                     </div>
                 </div>
             </div>
@@ -348,12 +348,10 @@
 
     <!-- SCRIPT UTAMA -->
     <script>
-        const APP_VERSION = "2.1.6"; 
+        const APP_VERSION = "2.1.7"; 
         const API_URL = "https://script.google.com/macros/s/AKfycby5qHzPemaYLKqh7VN0yrjkkSDZUc2I_QFrsYqzjxGJM5b4Y2rvM_VWDop-W-vrkGgr/exec"; 
 
         let transactions = []; let categories = []; 
-        let deletedIds = []; let deletedCatIds = []; 
-        let modifiedIds = []; let modifiedCatIds = []; 
         let isSyncing = false; 
         let reimburseHistory = JSON.parse(localStorage.getItem('reimburseHistory')) || []; let currentReceiptBase64 = null;
         let confirmActionData = null; 
@@ -367,125 +365,120 @@
         ];
 
         // =========================================================================
-        // ENGINE UTAMA: OPTIMISTIC UI + SINKRONISASI KETAT
+        // ENGINE UTAMA: OPTIMISTIC UI + VERIFIKASI 3 KALI COBA + RESET
         // =========================================================================
         async function syncAndSaveData(actionType, payloadData) {
             const loader = document.getElementById('sync-loader'); 
             const statusText = document.getElementById('sync-status-text'); 
             const icon = document.getElementById('sync-loader-icon');
-            loader.classList.remove('hidden'); 
-            setTimeout(() => { loader.style.opacity = '1'; }, 10);
-
-            // 1. BACKUP DATA LOKAL (Jika Nanti Terjadi Error / Rollback)
+            
+            // 1. BACKUP DATA LOKAL SEBELUM DIUBAH (Buat persiapan kalau gagal/batal)
             const backupTransactions = JSON.parse(JSON.stringify(transactions));
             const backupCategories = JSON.parse(JSON.stringify(categories));
-            const backupDelIds = [...deletedIds]; const backupDelCatIds = [...deletedCatIds];
-            const backupModIds = [...modifiedIds]; const backupModCatIds = [...modifiedCatIds];
 
-            // 2. OPTIMISTIC UPDATE: Ubah Data Lokal Secara Instan! (Agar UI terasa Super Cepat)
+            // 2. OPTIMISTIC UPDATE: Ubah Data Lokal Secara Instan
             if (actionType === 'save_trx') {
                 const isEdit = payloadData.isEdit; const newData = payloadData.data;
                 if (isEdit) { const idx = transactions.findIndex(t => String(t.id) === String(newData.id)); if (idx !== -1) transactions[idx] = newData; } else transactions.push(newData);
-                if (!modifiedIds.includes(String(newData.id))) modifiedIds.push(String(newData.id));
             } else if (actionType === 'del_trx') {
                 transactions = transactions.filter(t => String(t.id) !== String(payloadData.id));
-                if (!deletedIds.includes(String(payloadData.id))) deletedIds.push(String(payloadData.id));
             } else if (actionType === 'save_cat') {
                 categories.push(payloadData.data);
-                if (!modifiedCatIds.includes(String(payloadData.data.id))) modifiedCatIds.push(String(payloadData.data.id));
             } else if (actionType === 'del_cat') {
                 categories = categories.filter(c => String(c.id) !== String(payloadData.id));
-                if (!deletedCatIds.includes(String(payloadData.id))) deletedCatIds.push(String(payloadData.id));
             }
 
-            // MANTRA: Render UI seketika! Di belakang layar saat loading, data sudah hilang/tambah!
+            // Tampilkan perubahan di Layar Seketika itu juga!
             init();
             if(actionType.includes('cat')) renderCategorySettings();
 
+            // Munculkan layar Loading untuk mengurus Server
+            loader.classList.remove('hidden'); 
+            setTimeout(() => { loader.style.opacity = '1'; }, 10);
+
+            // Jika Offline / URL Api kosong
+            if(!API_URL || API_URL === "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI" || !API_URL.includes("script.google.com")) { 
+                localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
+                icon.className = "fas fa-exclamation-triangle text-4xl text-yellow-500 scale-110"; statusText.innerText = "Disimpan di HP saja (Offline).";
+                showToast('Disimpan lokal', 'warning'); 
+                await new Promise(res => setTimeout(res, 1500)); 
+                loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500);
+                if(actionType === 'save_trx' || actionType === 'del_trx') cancelEdit();
+                return; 
+            }
+
             try {
-                // TAHAP 1: Tunggu 3 Detik (Cek Spreadsheet)
-                icon.className = "fas fa-sync animate-spin text-4xl text-blue-500";
-                for(let i=3; i>0; i--) { 
-                    statusText.innerText = `Menunggu ${i} detik (Cek perubahan Spreadsheets)...`; 
-                    await new Promise(r => setTimeout(r, 1000)); 
-                }
-
-                // Tarik data asli dari Cloud (Data Optimistic kita akan dipertahankan oleh pullAndMerge)
-                const pullSuccess = await pullAndMergeCloudData(true);
-                if (!pullSuccess && API_URL.includes("script.google.com")) {
-                    throw new Error("Gagal mengecek Cloud.");
-                }
-
-                // Pengecekan Jika Sedang Offline / URL Kosong
-                if(!API_URL || API_URL === "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI" || !API_URL.includes("script.google.com")) { 
-                    localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
-                    icon.className = "fas fa-exclamation-triangle text-4xl text-yellow-500 scale-110"; statusText.innerText = "Disimpan di HP saja.";
-                    showToast('Disimpan lokal (API Kosong/Offline)', 'warning'); 
-                    await new Promise(res => setTimeout(res, 1500)); 
-                    loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500);
-                    if(actionType === 'save_trx' || actionType === 'del_trx') cancelEdit();
-                    return; 
-                }
-
-                // TAHAP 3: Kirim Perubahan ke Spreadsheets
+                // TAHAP 1: KIRIM DATA KE SPREADSHEETS (POST)
                 icon.className = "fas fa-cloud-upload-alt animate-bounce text-4xl text-gurmie-orange";
-                statusText.innerText = "Menginput data ke Spreadsheets...";
+                statusText.innerText = "Mengirim data ke Spreadsheets...";
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ transactions, categories }) });
 
-                // TAHAP 4: Tunggu 10 Detik
-                icon.className = "fas fa-hourglass-half animate-pulse text-4xl text-gurmie-orange";
-                for(let i=10; i>0; i--) { 
-                    statusText.innerText = `Menunggu ${i} detik (Verifikasi dari Spreadsheets)...`; 
-                    await new Promise(r => setTimeout(r, 1000)); 
-                }
-
-                // TAHAP 5: Pengecekan Akhir
-                statusText.innerText = "Mengecek Hasil...";
-                const verifyRes = await fetch(`${API_URL}${API_URL.includes('?') ? '&' : '?'}verify_t=${new Date().getTime()}`, { cache: 'no-store' });
-                const verifyData = await verifyRes.json();
-                
-                const cloudTrx = verifyData.transactions || []; const cloudCat = verifyData.categories || [];
+                // TAHAP 2: LOOPING VERIFIKASI MAKSIMAL 3 KALI
                 let isSuccess = false;
+                icon.className = "fas fa-sync animate-spin text-4xl text-blue-500";
 
-                if (actionType === 'save_trx') isSuccess = cloudTrx.some(t => String(t.id) === String(payloadData.data.id));
-                else if (actionType === 'del_trx') isSuccess = !cloudTrx.some(t => String(t.id) === String(payloadData.id));
-                else if (actionType === 'save_cat') isSuccess = cloudCat.some(c => String(c.id) === String(payloadData.data.id));
-                else if (actionType === 'del_cat') isSuccess = !cloudCat.some(c => String(c.id) === String(payloadData.id));
+                for(let attempt = 1; attempt <= 3; attempt++) {
+                    statusText.innerText = `Menunggu respons Spreadsheets (Cek ${attempt} dari 3)...`; 
+                    await new Promise(r => setTimeout(r, 4000)); // Tunggu 4 Detik setiap mau ngecek
+
+                    // Tarik data terbaru untuk dicek
+                    const verifyRes = await fetch(`${API_URL}${API_URL.includes('?') ? '&' : '?'}verify_t=${new Date().getTime()}`, { cache: 'no-store' });
+                    const verifyData = await verifyRes.json();
+                    
+                    const cloudTrx = verifyData.transactions || []; 
+                    const cloudCat = verifyData.categories || [];
+
+                    // Cek berdasarkan aksinya
+                    if (actionType === 'save_trx') isSuccess = cloudTrx.some(t => String(t.id) === String(payloadData.data.id));
+                    else if (actionType === 'del_trx') isSuccess = !cloudTrx.some(t => String(t.id) === String(payloadData.id));
+                    else if (actionType === 'save_cat') isSuccess = cloudCat.some(c => String(c.id) === String(payloadData.data.id));
+                    else if (actionType === 'del_cat') isSuccess = !cloudCat.some(c => String(c.id) === String(payloadData.id));
+
+                    if (isSuccess) break; // Berhasil! Stop looping.
+                }
 
                 if (isSuccess) {
                     icon.className = "fas fa-check-circle text-5xl text-green-500 scale-110"; statusText.innerText = "Berhasil Disimpan!"; 
-                    showToast('Sukses sinkron dengan Cloud!', 'success');
-                    
-                    // Bersihkan semua riwayat tracking karena sudah ter-upload
-                    modifiedIds = []; modifiedCatIds = []; deletedIds = []; deletedCatIds = [];
-                    localStorage.setItem('deletedIds', '[]'); localStorage.setItem('deletedCatIds', '[]');
+                    showToast('Data berhasil sinkron!', 'success');
                     localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
                 } else {
-                    throw new Error("Gagal Verifikasi 10 Detik");
+                    // Kalau sampai ke sini artinya 3 kali percobaan selalu gagal
+                    throw new Error("Gagal Verifikasi 3 Kali");
                 }
                 await new Promise(res => setTimeout(res, 1500));
 
             } catch (err) {
-                // TAHAP 6: BENTROK/GAGAL -> ROLLBACK!
+                // TAHAP 3: JIKA SEMUA GAGAL, RESET DATA DARI CLOUD!
                 icon.className = "fas fa-times-circle text-5xl text-red-500 scale-110"; 
-                statusText.innerText = "Gagal Input! Membatalkan Perubahan..."; 
-                showToast('Gagal Input! Me-refresh data dari Server...', 'error');
+                statusText.innerText = "Gagal total! Membatalkan..."; 
+                showToast('Gagal sinkron. Me-reset data dari Server...', 'error');
                 
-                // Rollback lokal ke backup
-                transactions = backupTransactions; categories = backupCategories;
-                deletedIds = backupDelIds; deletedCatIds = backupDelCatIds;
-                modifiedIds = backupModIds; modifiedCatIds = backupModCatIds;
+                statusText.innerText = "Mereset data lokal dari Spreadsheets...";
                 
-                statusText.innerText = "Me-refresh ulang dari Cloud...";
-                await pullAndMergeCloudData(true);
+                // Menarik ulang (PULL) seluruh data segar dari cloud
+                const pullRes = await fetch(`${API_URL}${API_URL.includes('?') ? '&' : '?'}pull_t=${new Date().getTime()}`, { cache: 'no-store' });
+                if(pullRes.ok) {
+                    const cloudData = await pullRes.json();
+                    transactions = cloudData.transactions || [];
+                    categories = cloudData.categories || defaultCategories;
+                    transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                } else {
+                    // Kalau gagal narik juga, kembalikan ke Backup Awal
+                    transactions = backupTransactions; categories = backupCategories;
+                }
+
                 localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
-                
                 await new Promise(res => setTimeout(res, 2000));
+
             } finally { 
-                init(); renderCategorySettings(); updateCategorySelect();
+                // TAHAP 4: BERESIN TAMPILAN
+                init(); 
+                renderCategorySettings(); updateCategorySelect();
                 loader.style.opacity = '0'; setTimeout(() => loader.classList.add('hidden'), 500); 
+                
                 if(actionType === 'save_trx') cancelEdit();
                 if(actionType === 'del_cat' || actionType === 'save_cat') {
+                    // Balikin UI Admin Kategori kalau aksinya dari sana
                     setTimeout(() => document.getElementById('settings-modal').classList.add('active'), 600);
                 }
             }
@@ -499,18 +492,9 @@
                 const getRes = await fetch(fetchUrl, fetchOptions); if (!getRes.ok) return false;
                 const cloudData = await getRes.json(); if (cloudData.error) return false;
                 
-                let cloudTrx = cloudData.transactions || []; let cloudCat = cloudData.categories || defaultCategories;
-                
-                // MANTRA PROTEKSI: Jika ada data yg baru kita edit/tambah (Optimistic), jangan ditimpa oleh Cloud yang usang!
-                const trxMap = new Map(); 
-                cloudTrx.forEach(t => { if (!deletedIds.includes(String(t.id))) trxMap.set(String(t.id), t); }); 
-                transactions.forEach(t => { if (modifiedIds.includes(String(t.id))) trxMap.set(String(t.id), t); }); 
-                transactions = Array.from(trxMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                const catMap = new Map(); 
-                cloudCat.forEach(c => { if (!deletedCatIds.includes(String(c.id))) catMap.set(String(c.id), c); }); 
-                categories.forEach(c => { if (modifiedCatIds.includes(String(c.id))) catMap.set(String(c.id), c); }); 
-                categories = Array.from(catMap.values());
+                transactions = cloudData.transactions || []; 
+                categories = cloudData.categories || defaultCategories;
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
                 return true;
@@ -570,28 +554,35 @@
         function getCategoryDetails(catName) { if(catName === 'Suntikan Dana') return { name: catName, icon: 'fa-hand-holding-dollar', hex: '&#xf4c0;' }; if(catName === 'Modal') return { name: catName, icon: 'fa-piggy-bank', hex: '&#xf4d3;' }; const cat = categories.find(c => c.name === catName); return cat ? cat : { name: catName, icon: 'fa-box', hex: '&#xf466;' }; }
 
         // ==========================================
-        //  TRIGGER TOMBOL MODAL KONFIRMASI HAPUS
+        //  FUNGSI TRIGGER TOMBOL (ANTI-MELESET DI PC)
         // ==========================================
-        document.getElementById('confirm-action-btn').addEventListener('click', () => {
-            if(!confirmActionData) return;
-            const data = confirmActionData;
-            confirmActionData = null; // Kosongkan segera cegah double click
-            closeConfirmModal();
-            syncAndSaveData(data.actionType, data.payload);
-        });
-
-        function initiateDeleteTrx(id) {
+        window.triggerDeleteTrx = function(e, id) {
+            e.preventDefault(); e.stopPropagation();
             confirmActionData = { actionType: 'del_trx', payload: { id: id } };
             document.getElementById('confirm-msg').innerText = "Tindakan ini akan menghapus transaksi secara permanen.";
             showConfirmModal();
-        }
+        };
 
-        function initiateDeleteCat(id) {
+        window.triggerEditTrx = function(e, id) {
+            e.preventDefault(); e.stopPropagation();
+            editTransaction(id);
+        };
+
+        window.triggerDeleteCat = function(e, id) {
+            e.preventDefault(); e.stopPropagation();
             confirmActionData = { actionType: 'del_cat', payload: { id: id } };
             document.getElementById('confirm-msg').innerText = "Tindakan ini akan menghapus kategori ini secara permanen.";
             closeModal('settings-modal'); 
             showConfirmModal();
-        }
+        };
+
+        document.getElementById('confirm-action-btn').addEventListener('click', () => {
+            if(!confirmActionData) return;
+            const data = confirmActionData;
+            confirmActionData = null; // Kosongkan cegah double click
+            closeConfirmModal();
+            syncAndSaveData(data.actionType, data.payload);
+        });
 
         function showConfirmModal() {
             const modal = document.getElementById('confirm-modal');
@@ -618,8 +609,7 @@
                 
                 icon.className = "fas fa-sync animate-spin text-4xl text-gurmie-orange"; statusText.innerText = "Memperbarui Data...";
                 transactions = cloudData.transactions || []; categories = cloudData.categories || defaultCategories;
-                deletedIds = []; deletedCatIds = []; modifiedIds = []; modifiedCatIds = [];
-                localStorage.setItem('deletedIds', '[]'); localStorage.setItem('deletedCatIds', '[]');
+                
                 localStorage.setItem('transactions', JSON.stringify(transactions)); localStorage.setItem('categories', JSON.stringify(categories));
                 init(); renderCategorySettings(); updateCategorySelect();
                 
@@ -745,10 +735,10 @@
                 <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-2 sm:pt-0">
                     <span class="font-mono text-sm sm:text-base font-bold ${isInc?'text-green-600':'text-red-600'} truncate text-right">${isInc?'+':'-'}${formatRupiah(trx.amount)}</span>
                     <div class="flex gap-1.5" onclick="event.stopPropagation()">
-                        <button onclick="event.stopPropagation(); editTransaction('${trx.id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 w-9 h-9 rounded-lg border transition">
+                        <button type="button" onclick="window.triggerEditTrx(event, '${trx.id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 w-9 h-9 rounded-lg border transition">
                             <i class="fas fa-edit pointer-events-none"></i>
                         </button>
-                        <button onclick="event.stopPropagation(); initiateDeleteTrx('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 w-9 h-9 rounded-lg border transition">
+                        <button type="button" onclick="window.triggerDeleteTrx(event, '${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 w-9 h-9 rounded-lg border transition">
                             <i class="fas fa-trash pointer-events-none"></i>
                         </button>
                     </div>
@@ -760,7 +750,7 @@
             const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return; const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category);
             let html = `<div class="space-y-4"><div class="flex justify-between items-center border-b pb-3"><div><p class="text-[10px] text-gray-500 uppercase">Kategori</p><p class="font-bold text-lg"><i class="fas ${catDetails.icon} mr-2"></i>${trx.category}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 uppercase">Total</p><p class="font-mono font-bold text-xl ${isInc?'text-green-600':'text-red-600'} break-all max-w-[150px] leading-tight">${isInc?'+':'-'}${formatRupiah(trx.amount)}</p></div></div>`;
             if(trx.receipt) html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded border">`;
-            html += `<div class="mt-4 flex gap-2 pt-4 border-t"><button onclick="closeModal('detail-modal'); setTimeout(()=>editTransaction('${trx.id}'), 300);" class="flex-1 py-2 bg-blue-50 text-blue-600 font-bold rounded border transition"><i class="fas fa-edit"></i> Edit</button><button onclick="closeModal('detail-modal'); setTimeout(()=>initiateDeleteTrx('${trx.id}'), 300);" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded border transition"><i class="fas fa-trash"></i> Hapus</button></div></div>`; 
+            html += `<div class="mt-4 flex gap-2 pt-4 border-t"><button type="button" onclick="closeModal('detail-modal'); setTimeout(()=>window.triggerEditTrx(event, '${trx.id}'), 300);" class="flex-1 py-2 bg-blue-50 text-blue-600 font-bold rounded border transition"><i class="fas fa-edit"></i> Edit</button><button type="button" onclick="closeModal('detail-modal'); setTimeout(()=>window.triggerDeleteTrx(event, '${trx.id}'), 300);" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded border transition"><i class="fas fa-trash"></i> Hapus</button></div></div>`; 
             document.getElementById('modal-body').innerHTML = html; document.getElementById('detail-modal').classList.add('active');
         }
 
@@ -789,7 +779,7 @@
                 const item = document.createElement('div'); item.className = 'flex justify-between items-center p-3 bg-white rounded-lg border'; 
                 item.innerHTML = `
                     <div class="flex items-center gap-3"><i class="fas ${cat.icon} text-gray-500"></i><span class="text-sm font-medium">${cat.name}</span></div>
-                    <button onclick="event.stopPropagation(); initiateDeleteCat('${cat.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded">
+                    <button type="button" onclick="window.triggerDeleteCat(event, '${cat.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded">
                         <i class="fas fa-trash pointer-events-none"></i>
                     </button>
                 `; 
