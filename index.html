@@ -379,7 +379,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI VERSI & API ---
-        const APP_VERSION = "2.0.6"; // UBAH ANGKA INI UNTUK MEMAKSA SEMUA DEVICE RESET CACHE
+        const APP_VERSION = "2.0.9"; // UBAH ANGKA INI UNTUK MEMAKSA SEMUA DEVICE RESET CACHE
         const API_URL = "https://script.google.com/macros/s/AKfycbxQQYAdE8tcL5XqgkwXDZHw0-jzGymvhXwZO-UEDfBGsVI3uJonUs96vZ3cwkhqXqX9/exec"; 
 
         let transactions = []; 
@@ -641,7 +641,8 @@
             }
         }
 
-        async function deleteWithVerification(id) {
+        // PENYEBABNYA DI SINI: FUNGSI INI KINI DINAMAI deleteTransaction BUKAN deleteWithVerification LAGI
+        async function deleteTransaction(id) {
             if(!confirm('Yakin hapus data?')) return;
             const loader = document.getElementById('sync-loader'); const statusText = document.getElementById('sync-status-text'); const icon = document.getElementById('sync-loader-icon');
             loader.classList.remove('hidden'); setTimeout(() => { loader.style.opacity = '1'; }, 10);
