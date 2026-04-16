@@ -312,7 +312,7 @@
     <nav class="fixed bottom-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-4 z-40 transition-colors">
         <div class="max-w-md mx-auto flex justify-between items-center h-14">
             <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center justify-center w-12 text-gurmie-orange"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px] font-bold">Home</span></button>
-            <button onclick="document.getElementById('dash-filter-type').focus()" class="flex flex-col items-center justify-center w-12 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"><i class="fas fa-search text-lg mb-1"></i><span class="text-[9px] font-bold">Filter</span></button>
+            <button onclick="openAnalytics()" class="flex flex-col items-center justify-center w-12 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"><i class="fas fa-filter text-lg mb-1"></i><span class="text-[9px] font-bold">Filter</span></button>
             <button onclick="openSettings('kategori')" class="flex flex-col items-center justify-center w-12 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition relative"><i class="fas fa-cog text-lg mb-1"></i><span class="text-[9px] font-bold">Admin</span><span class="absolute top-0 right-2 w-2 h-2 bg-red-500 rounded-full hidden" id="admin-notif-dot"></span></button>
         </div>
     </nav>
@@ -563,7 +563,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxiWiO-Dw41_bmZB7QySGQpYlt53xNrBP3Nehftqx6D1TcbF8ASOYejsfvI1TfKSl7k/exec"; // Pertahankan script Google Sheets Anda
+        const API_URL = "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI"; // Pertahankan script Google Sheets Anda
         const geminiApiKey = ""; // API Key Gemini
 
         // --- FUNGSI HELPER GEMINI ---
