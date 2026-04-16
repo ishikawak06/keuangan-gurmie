@@ -348,7 +348,7 @@
 
     <!-- SCRIPT UTAMA -->
     <script>
-        const APP_VERSION = "2.1.7"; 
+        const APP_VERSION = "2.1.8"; 
         const API_URL = "https://script.google.com/macros/s/AKfycby5qHzPemaYLKqh7VN0yrjkkSDZUc2I_QFrsYqzjxGJM5b4Y2rvM_VWDop-W-vrkGgr/exec"; 
 
         let transactions = []; let categories = []; 
@@ -554,27 +554,24 @@
         function getCategoryDetails(catName) { if(catName === 'Suntikan Dana') return { name: catName, icon: 'fa-hand-holding-dollar', hex: '&#xf4c0;' }; if(catName === 'Modal') return { name: catName, icon: 'fa-piggy-bank', hex: '&#xf4d3;' }; const cat = categories.find(c => c.name === catName); return cat ? cat : { name: catName, icon: 'fa-box', hex: '&#xf466;' }; }
 
         // ==========================================
-        //  FUNGSI TRIGGER TOMBOL (ANTI-MELESET DI PC)
+        //  FUNGSI TRIGGER TOMBOL (DIPERBAIKI TOTAL)
         // ==========================================
-        window.triggerDeleteTrx = function(e, id) {
-            e.preventDefault(); e.stopPropagation();
+        function initiateDeleteTrx(id) {
             confirmActionData = { actionType: 'del_trx', payload: { id: id } };
             document.getElementById('confirm-msg').innerText = "Tindakan ini akan menghapus transaksi secara permanen.";
             showConfirmModal();
-        };
+        }
 
-        window.triggerEditTrx = function(e, id) {
-            e.preventDefault(); e.stopPropagation();
+        function initiateEditTrx(id) {
             editTransaction(id);
-        };
+        }
 
-        window.triggerDeleteCat = function(e, id) {
-            e.preventDefault(); e.stopPropagation();
+        function initiateDeleteCat(id) {
             confirmActionData = { actionType: 'del_cat', payload: { id: id } };
             document.getElementById('confirm-msg').innerText = "Tindakan ini akan menghapus kategori ini secara permanen.";
             closeModal('settings-modal'); 
             showConfirmModal();
-        };
+        }
 
         document.getElementById('confirm-action-btn').addEventListener('click', () => {
             if(!confirmActionData) return;
@@ -707,6 +704,9 @@
             });
         });
 
+        // ==========================================
+        //  UI RENDER LIST (ANTI-PECAH & KLIK AMAN)
+        // ==========================================
         function renderList() {
             const listEl = document.getElementById('transaction-list'); listEl.innerHTML = '';
             if (transactions.length === 0) return listEl.innerHTML = '<div class="text-center text-gray-500 mt-5 text-sm">Tidak ada transaksi.</div>';
@@ -723,26 +723,28 @@
                 }
 
                 const el = document.createElement('div'); 
-                el.className = 'group flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white hover:bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer shadow-sm gap-3'; el.onclick = () => showTransactionDetails(trx.id);
+                // Parent tidak memiliki onclick, sehingga klik tombol aman mutlak!
+                el.className = 'group flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white hover:bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm gap-3';
                 el.innerHTML = `
-                <div class="flex items-center gap-3 overflow-hidden pointer-events-none">
+                <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1 w-full sm:w-auto" onclick="showTransactionDetails('${trx.id}')">
                     <div class="w-10 h-10 rounded-full flex-shrink-0 bg-gray-50 dark:bg-black/50 flex items-center justify-center border text-gurmie-orange"><i class="fas ${catDetails.icon}"></i></div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex-1">
                         <p class="text-sm font-bold truncate">${displayTitle} ${trx.receipt ? '<i class="fas fa-receipt text-orange-500 ml-1"></i>' : ''}</p>
                         <p class="text-[10px] font-bold text-gray-400 truncate uppercase mt-0.5">${trx.category} · ${formatDate(trx.date)}</p>
                     </div>
                 </div>
-                <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-2 sm:pt-0">
-                    <span class="font-mono text-sm sm:text-base font-bold ${isInc?'text-green-600':'text-red-600'} truncate text-right">${isInc?'+':'-'}${formatRupiah(trx.amount)}</span>
-                    <div class="flex gap-1.5" onclick="event.stopPropagation()">
-                        <button type="button" onclick="window.triggerEditTrx(event, '${trx.id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 w-9 h-9 rounded-lg border transition">
+                <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-2 sm:pt-0 w-full sm:w-auto mt-2 sm:mt-0">
+                    <span class="font-mono text-sm sm:text-base font-bold ${isInc?'text-green-600':'text-red-600'} truncate text-right flex-1 sm:flex-none cursor-pointer overflow-hidden text-ellipsis" onclick="showTransactionDetails('${trx.id}')" title="${isInc?'+':'-'}${formatRupiah(trx.amount)}">${isInc?'+':'-'}${formatRupiah(trx.amount)}</span>
+                    <div class="flex gap-1.5 flex-shrink-0">
+                        <button type="button" onclick="initiateEditTrx('${trx.id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 w-9 h-9 rounded-lg border transition">
                             <i class="fas fa-edit pointer-events-none"></i>
                         </button>
-                        <button type="button" onclick="window.triggerDeleteTrx(event, '${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 w-9 h-9 rounded-lg border transition">
+                        <button type="button" onclick="initiateDeleteTrx('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 w-9 h-9 rounded-lg border transition">
                             <i class="fas fa-trash pointer-events-none"></i>
                         </button>
                     </div>
-                </div>`; listEl.appendChild(el);
+                </div>`; 
+                listEl.appendChild(el);
             });
         }
 
@@ -750,7 +752,10 @@
             const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return; const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category);
             let html = `<div class="space-y-4"><div class="flex justify-between items-center border-b pb-3"><div><p class="text-[10px] text-gray-500 uppercase">Kategori</p><p class="font-bold text-lg"><i class="fas ${catDetails.icon} mr-2"></i>${trx.category}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 uppercase">Total</p><p class="font-mono font-bold text-xl ${isInc?'text-green-600':'text-red-600'} break-all max-w-[150px] leading-tight">${isInc?'+':'-'}${formatRupiah(trx.amount)}</p></div></div>`;
             if(trx.receipt) html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded border">`;
-            html += `<div class="mt-4 flex gap-2 pt-4 border-t"><button type="button" onclick="closeModal('detail-modal'); setTimeout(()=>window.triggerEditTrx(event, '${trx.id}'), 300);" class="flex-1 py-2 bg-blue-50 text-blue-600 font-bold rounded border transition"><i class="fas fa-edit"></i> Edit</button><button type="button" onclick="closeModal('detail-modal'); setTimeout(()=>window.triggerDeleteTrx(event, '${trx.id}'), 300);" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded border transition"><i class="fas fa-trash"></i> Hapus</button></div></div>`; 
+            html += `<div class="mt-4 flex gap-2 pt-4 border-t">
+                        <button type="button" onclick="closeModal('detail-modal'); setTimeout(()=>initiateEditTrx('${trx.id}'), 300);" class="flex-1 py-2 bg-blue-50 text-blue-600 font-bold rounded border transition"><i class="fas fa-edit"></i> Edit</button>
+                        <button type="button" onclick="closeModal('detail-modal'); setTimeout(()=>initiateDeleteTrx('${trx.id}'), 300);" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded border transition"><i class="fas fa-trash"></i> Hapus</button>
+                    </div></div>`; 
             document.getElementById('modal-body').innerHTML = html; document.getElementById('detail-modal').classList.add('active');
         }
 
@@ -779,7 +784,7 @@
                 const item = document.createElement('div'); item.className = 'flex justify-between items-center p-3 bg-white rounded-lg border'; 
                 item.innerHTML = `
                     <div class="flex items-center gap-3"><i class="fas ${cat.icon} text-gray-500"></i><span class="text-sm font-medium">${cat.name}</span></div>
-                    <button type="button" onclick="window.triggerDeleteCat(event, '${cat.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded">
+                    <button type="button" onclick="initiateDeleteCat('${cat.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded">
                         <i class="fas fa-trash pointer-events-none"></i>
                     </button>
                 `; 
