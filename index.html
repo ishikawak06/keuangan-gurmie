@@ -379,7 +379,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI VERSI & API ---
-        const APP_VERSION = "2.0.3"; // UBAH ANGKA INI UNTUK MEMAKSA SEMUA DEVICE RESET CACHE
+        const APP_VERSION = "2.0.6"; // UBAH ANGKA INI UNTUK MEMAKSA SEMUA DEVICE RESET CACHE
         const API_URL = "https://script.google.com/macros/s/AKfycbxQQYAdE8tcL5XqgkwXDZHw0-jzGymvhXwZO-UEDfBGsVI3uJonUs96vZ3cwkhqXqX9/exec"; 
 
         let transactions = []; 
@@ -854,25 +854,84 @@
             saveWithVerification(transactionData, !!editId);
         });
 
+        // ==========================================
+        //  RENDER LIST (DIPERBARUI UNTUK MOBILE & PC)
+        // ==========================================
         function renderList() {
             const listEl = document.getElementById('transaction-list'); listEl.innerHTML = '';
             if (transactions.length === 0) { listEl.innerHTML = '<div class="text-center text-gray-500 mt-10 text-sm italic">Tidak ada transaksi.</div>'; return; }
             
             transactions.forEach(trx => {
-                const isInc = trx.type === 'income'; const colorClass = isInc ? 'text-green-600' : 'text-red-600';
+                const isInc = trx.type === 'income'; 
+                const colorClass = isInc ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                 const catDetails = getCategoryDetails(trx.category); 
+                
+                // Indikator/Badge
+                const receiptBadge = trx.receipt ? `<span class="bg-orange-100 text-orange-600 text-[10px] px-1.5 py-0.5 rounded border ml-1"><i class="fas fa-receipt"></i></span>` : '';
+                const itemBadge = (!isInc && trx.items && trx.items.length > 0) ? `<span class="text-[10px] text-gray-400 ml-1"><i class="fas fa-box"></i> ${trx.items.length}</span>` : '';
 
-                const el = document.createElement('div'); el.className = 'group flex items-center justify-between p-3 bg-white hover:bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-200 cursor-pointer shadow-sm'; el.onclick = () => showTransactionDetails(trx.id);
-                el.innerHTML = `<div class="flex items-center gap-4 pointer-events-none"><div class="w-10 h-10 rounded-full bg-gray-50 dark:bg-black/50 flex items-center justify-center border text-gurmie-orange"><i class="fas ${catDetails.icon}"></i></div><div><p class="text-sm font-bold">${trx.category}</p><p class="text-xs text-gray-500">${formatDate(trx.date)}</p></div></div><div class="flex items-center gap-4"><span class="font-mono text-sm font-bold ${colorClass}">${isInc?'+':'-'}${formatRupiah(trx.amount)}</span><div class="opacity-0 group-hover:opacity-100 flex gap-1" onclick="event.stopPropagation()"><button onclick="editTransaction('${trx.id}')" class="text-blue-500 p-1.5"><i class="fas fa-edit"></i></button><button onclick="deleteTransaction('${trx.id}')" class="text-red-500 p-1.5"><i class="fas fa-trash"></i></button></div></div>`;
+                const el = document.createElement('div'); 
+                
+                // MENGUBAH LAYOUT: flex-col pada layar kecil agar tidak tergencet, flex-row pada layar besar
+                el.className = 'group flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white hover:bg-gray-50 dark:bg-gray-800/40 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer shadow-sm gap-3 transition-all'; 
+                el.onclick = () => showTransactionDetails(trx.id);
+                
+                el.innerHTML = `
+                <div class="flex items-center gap-3 overflow-hidden pointer-events-none">
+                    <div class="w-10 h-10 rounded-full flex-shrink-0 bg-gray-50 dark:bg-black/50 flex items-center justify-center border border-gray-200 dark:border-gray-700 text-gurmie-orange">
+                        <i class="fas ${catDetails.icon}"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold truncate text-gray-800 dark:text-gray-100">${trx.category} ${receiptBadge}</p>
+                        <p class="text-xs text-gray-500 truncate">${formatDate(trx.date)} ${itemBadge}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 border-gray-100 dark:border-gray-800 pt-2 sm:pt-0">
+                    <span class="font-mono text-sm sm:text-base font-bold ${colorClass} truncate flex-1 sm:flex-none text-left sm:text-right">${isInc?'+':'-'}${formatRupiah(trx.amount)}</span>
+                    
+                    <div class="flex gap-1.5" onclick="event.stopPropagation()">
+                        <button onclick="editTransaction('${trx.id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 w-9 h-9 flex items-center justify-center rounded-lg transition border border-blue-100 dark:border-blue-900/50" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteTransaction('${trx.id}')" class="text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 w-9 h-9 flex items-center justify-center rounded-lg transition border border-red-100 dark:border-red-900/50" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+                
                 listEl.appendChild(el);
             });
         }
 
+        // ==========================================
+        //  MODAL DETAIL (ADA TOMBOL EDIT & HAPUSNYA JUGA)
+        // ==========================================
         function showTransactionDetails(id) {
             const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return; const isInc = trx.type === 'income'; const catDetails = getCategoryDetails(trx.category);
-            let html = `<div class="space-y-4"><div class="flex justify-between items-center border-b pb-3 dark:border-gray-700"><div><p class="text-[10px] text-gray-500 uppercase">Kategori</p><p class="font-bold text-lg"><i class="fas ${catDetails.icon} mr-2"></i>${trx.category}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 uppercase">Total</p><p class="font-mono font-bold text-xl ${isInc?'text-green-600':'text-red-600'}">${isInc?'+':'-'}${formatRupiah(trx.amount)}</p></div></div>`;
-            if(trx.receipt) html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded">`;
-            html += `</div>`; document.getElementById('modal-body').innerHTML = html; document.getElementById('detail-modal').classList.add('active');
+            
+            let html = `<div class="space-y-4">
+                <div class="flex justify-between items-center border-b pb-3 dark:border-gray-700">
+                    <div>
+                        <p class="text-[10px] text-gray-500 uppercase">Kategori</p>
+                        <p class="font-bold text-lg"><i class="fas ${catDetails.icon} mr-2"></i>${trx.category}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-gray-500 uppercase">Total</p>
+                        <p class="font-mono font-bold text-xl ${isInc?'text-green-600':'text-red-600'}">${isInc?'+':'-'}${formatRupiah(trx.amount)}</p>
+                    </div>
+                </div>`;
+                
+            if(trx.receipt) {
+                html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded">`;
+            }
+            
+            // Tambahan: Tombol Aksi di Bawah Detail Modal
+            html += `<div class="mt-4 flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button onclick="closeModal('detail-modal'); setTimeout(()=>editTransaction('${trx.id}'), 300);" class="flex-1 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold rounded-lg border border-blue-200 dark:border-blue-800 transition hover:bg-blue-100 flex justify-center items-center gap-2"><i class="fas fa-edit"></i> Edit Data</button>
+                <button onclick="closeModal('detail-modal'); setTimeout(()=>deleteTransaction('${trx.id}'), 300);" class="flex-1 py-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-lg border border-red-200 dark:border-red-800 transition hover:bg-red-100 flex justify-center items-center gap-2"><i class="fas fa-trash"></i> Hapus</button>
+            </div>`;
+            
+            html += `</div>`; 
+            
+            document.getElementById('modal-body').innerHTML = html; 
+            document.getElementById('detail-modal').classList.add('active');
         }
 
         function editTransaction(id) {
