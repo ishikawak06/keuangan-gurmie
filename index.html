@@ -563,7 +563,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI API ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxiWiO-Dw41_bmZB7QySGQpYlt53xNrBP3Nehftqx6D1TcbF8ASOYejsfvI1TfKSl7k/exec"; // Pertahankan script Google Sheets Anda
+        const API_URL = "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI"; // Pertahankan script Google Sheets Anda
         const geminiApiKey = ""; // API Key Gemini
 
         // --- FUNGSI HELPER GEMINI ---
@@ -590,6 +590,9 @@
 
         let transactions = []; 
         let categories = []; // Akan ditimpa oleh data dari Cloud atau Local Storage
+        let deletedIds = JSON.parse(localStorage.getItem('deletedIds')) || []; // Menyimpan ID transaksi yang dihapus
+        let deletedCatIds = JSON.parse(localStorage.getItem('deletedCatIds')) || []; // Menyimpan ID kategori yang dihapus
+        
         const defaultCategories = [
             { id: 'c1', name: 'Bahan Baku', icon: 'fa-drumstick-bite', hex: '&#xf6d7;' },
             { id: 'c2', name: 'Operasional', icon: 'fa-store', hex: '&#xf54e;' },
@@ -710,18 +713,59 @@
             categories = JSON.parse(localStorage.getItem('categories')) || defaultCategories;
         }
 
-        // 3. FUNGSI SIMPAN KE CLOUD (Kini mengirim Transaksi & Kategori)
-        async function syncToCloud() { 
+        // 3. FUNGSI SIMPAN KE CLOUD DENGAN SMART MERGE
+        async function syncToCloud(isSilent = true) { 
             try { 
+                const btnSync = document.getElementById('btn-sync');
+                if(btnSync) btnSync.classList.add('animate-spin', 'text-blue-500');
+
+                if(API_URL.includes("script.google.com")) {
+                    // 1. Ambil data terbaru dari cloud sebelum menimpa
+                    try {
+                        const getRes = await fetch(API_URL);
+                        const cloudData = await getRes.json();
+                        if (!cloudData.error) {
+                            let cloudTrx = cloudData.transactions || (Array.isArray(cloudData) ? cloudData : []);
+                            let cloudCat = cloudData.categories || defaultCategories;
+                            
+                            // 2. Gabungkan data (Mencegah data dari HP lain hilang)
+                            const trxMap = new Map();
+                            cloudTrx.forEach(t => {
+                                // Hanya masukkan dari cloud jika tidak pernah kita hapus
+                                if (!deletedIds.includes(String(t.id))) trxMap.set(String(t.id), t);
+                            });
+                            // Data lokal menimpa/menambah data cloud
+                            transactions.forEach(t => trxMap.set(String(t.id), t));
+                            transactions = Array.from(trxMap.values());
+                            
+                            const catMap = new Map();
+                            cloudCat.forEach(c => {
+                                if (!deletedCatIds.includes(String(c.id))) catMap.set(String(c.id), c);
+                            });
+                            categories.forEach(c => catMap.set(String(c.id), c));
+                            categories = Array.from(catMap.values());
+                        }
+                    } catch(err) {
+                        console.warn("Gagal mengambil data terbaru sebelum sync", err);
+                    }
+                }
+
+                // 3. Simpan hasil gabungan ke local storage
                 localStorage.setItem('transactions', JSON.stringify(transactions)); 
                 localStorage.setItem('categories', JSON.stringify(categories)); 
                 
-                if(!API_URL.includes("script.google.com")) return;
-
-                const btnSync = document.getElementById('btn-sync');
-                if(btnSync) btnSync.classList.add('animate-spin', 'text-blue-500');
+                // Refresh UI untuk menampilkan data gabungan (Data dari HP lain akan langsung muncul!)
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderList();
+                handleDashFilterChange();
+                renderCategorySettings();
                 
-                // Format Payload Baru: Mengandung 2 array
+                if(!API_URL.includes("script.google.com")) {
+                    if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
+                    return;
+                }
+
+                // 4. Kirim kembali data yang sudah lengkap ke Cloud
                 const payload = {
                     transactions: transactions,
                     categories: categories
@@ -737,19 +781,20 @@
                 if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
 
                 if (result === "Success") {
-                    showToast('Tersimpan di Cloud!', 'success');
+                    if (!isSilent) showToast('Sinkronisasi Cloud Berhasil!', 'success');
                 } else {
-                    showToast('Gagal Cloud: ' + result, 'error');
+                    if (!isSilent) showToast('Gagal Cloud: ' + result, 'error');
                 }
             } catch (e) { 
                 const btnSync = document.getElementById('btn-sync');
                 if(btnSync) btnSync.classList.remove('animate-spin', 'text-blue-500');
+                if (!isSilent) showToast('Koneksi terganggu saat sinkronisasi.', 'error');
             } 
         }
 
         function forceSync() {
             showToast('Menyinkronkan ke Cloud...', 'warning');
-            syncToCloud();
+            syncToCloud(false);
         }
 
         // --- MANAJEMEN FILTER DASHBOARD ---
@@ -875,7 +920,8 @@
             document.getElementById('transaction-form').reset(); document.getElementById('items-container').innerHTML = ''; addEmptyRow(); document.querySelector('input[name="type"][value="income"]').checked = true; toggleFormMode(); toggleReimburseFields(); removeReceipt(); 
             
             init(); 
-            syncToCloud();
+            // Sync dan berikan notifikasi (isSilent = false)
+            syncToCloud(false);
         });
 
         // --- UI & THEME HELPER ---
@@ -1374,8 +1420,16 @@
         function deleteTransaction(id) { 
             if(confirm('Yakin hapus data?')) { 
                 transactions = transactions.filter(t => String(t.id) !== String(id)); 
+                
+                // Simpan id yang dihapus agar tidak ditarik lagi dari cloud
+                if (!deletedIds.includes(String(id))) {
+                    deletedIds.push(String(id));
+                    if (deletedIds.length > 500) deletedIds = deletedIds.slice(-500); // Batasi memori
+                    localStorage.setItem('deletedIds', JSON.stringify(deletedIds));
+                }
+
                 init(); 
-                syncToCloud();
+                syncToCloud(true);
                 showToast('Dihapus!'); 
             } 
         }
@@ -1439,6 +1493,13 @@
         function deleteCategorySettings(id) { 
             if(confirm('Yakin hapus kategori ini? Data ini akan terhapus juga di perangkat lain saat tersinkronisasi.')) { 
                 categories = categories.filter(c => c.id !== id); 
+                
+                if (!deletedCatIds.includes(String(id))) {
+                    deletedCatIds.push(String(id));
+                    if (deletedCatIds.length > 100) deletedCatIds = deletedCatIds.slice(-100);
+                    localStorage.setItem('deletedCatIds', JSON.stringify(deletedCatIds));
+                }
+
                 saveCategoriesData(); 
                 showToast('Dihapus!', 'success'); 
             } 
@@ -1450,15 +1511,13 @@
             document.getElementById('cat-cancel-btn').classList.add('hidden'); 
         }
 
-        // Fungsi ini sekarang ikut memicu syncToCloud()
         function saveCategoriesData() { 
             localStorage.setItem('categories', JSON.stringify(categories)); 
             renderCategorySettings(); 
             updateCategorySelect(); 
             renderList(); 
             
-            // Pemicu Simpan ke Cloud untuk Kategori
-            syncToCloud(); 
+            syncToCloud(false); 
         }
     </script>
 </body>
