@@ -393,7 +393,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI VERSI & API ---
-        const APP_VERSION = "2.9.1"; // Versi diupdate ke 2.9.1
+        const APP_VERSION = "2.9.2"; // Versi diupdate ke 2.9.2 (Penambahan Logika Reimburse Admin)
         const API_URL = "https://script.google.com/macros/s/AKfycby5qHzPemaYLKqh7VN0yrjkkSDZUc2I_QFrsYqzjxGJM5b4Y2rvM_VWDop-W-vrkGgr/exec"; 
 
         let transactions = []; 
@@ -816,6 +816,7 @@
                         finalAccount = rAccount;
                         if (!reimburseHistory.some(h => h.method === finalMethod && h.account === finalAccount)) { reimburseHistory.push({ method: finalMethod, account: finalAccount }); localStorage.setItem('reimburseHistory', JSON.stringify(reimburseHistory)); renderReimburseSaved(); }
                     }
+                    // Pertahankan status yang sudah ada (jika diedit dan statusnya Lunas, jangan direset ke Belum)
                     reimburseData = { active: true, method: finalMethod, account: finalAccount, status: editId ? (transactions.find(t=>String(t.id)===String(editId))?.reimburse?.status || 'Belum Ditransfer') : 'Belum Ditransfer' };
                 }
             }
@@ -842,6 +843,16 @@
                 const receiptBadge = trx.receipt ? `<span class="bg-orange-100 text-orange-600 text-[10px] px-1.5 py-0.5 rounded border ml-1"><i class="fas fa-receipt"></i></span>` : '';
                 const itemBadge = (!isInc && trx.items && trx.items.length > 0) ? `<span class="text-[10px] text-gray-400 ml-1"><i class="fas fa-box"></i> ${trx.items.length}</span>` : '';
 
+                // Badge khusus Reimburse
+                let reimburseBadge = '';
+                if (trx.reimburse && trx.reimburse.active) {
+                    if (trx.reimburse.status === 'Sudah Ditransfer') {
+                        reimburseBadge = `<span class="bg-green-100 text-green-700 text-[9px] px-1.5 py-0.5 rounded border border-green-200 ml-1 whitespace-nowrap"><i class="fas fa-check-double mr-1"></i>Reimburse Lunas</span>`;
+                    } else {
+                        reimburseBadge = `<span class="bg-orange-100 text-orange-700 text-[9px] px-1.5 py-0.5 rounded border border-orange-200 ml-1 whitespace-nowrap animate-pulse"><i class="fas fa-clock mr-1"></i>Pending Reimburse</span>`;
+                    }
+                }
+
                 // Nama Tampilan 
                 let displayName = '';
                 if (isInc) {
@@ -864,7 +875,7 @@
                     </div>
                     <div class="min-w-0">
                         <p class="text-sm font-bold truncate text-gray-800 dark:text-gray-100">${displayName} ${receiptBadge}</p>
-                        <p class="text-xs text-gray-500 truncate">${formatDate(trx.date)} ${itemBadge}</p>
+                        <p class="text-xs text-gray-500 mt-0.5 flex items-center flex-wrap gap-1">${formatDate(trx.date)} ${itemBadge} ${reimburseBadge}</p>
                     </div>
                 </div>
                 
@@ -914,9 +925,25 @@
                 });
                 html += `</div>`;
             }
+
+            // Box Khusus Status Reimburse di Modal Detail
+            if (trx.reimburse && trx.reimburse.active) {
+                const isPaid = trx.reimburse.status === 'Sudah Ditransfer';
+                html += `
+                <div class="bg-${isPaid ? 'green' : 'orange'}-50 dark:bg-${isPaid ? 'green' : 'orange'}-900/20 p-3 rounded-lg border border-${isPaid ? 'green' : 'orange'}-200 dark:border-${isPaid ? 'green' : 'orange'}-800 mt-3 shadow-sm">
+                    <p class="text-[10px] text-${isPaid ? 'green' : 'orange'}-600 uppercase font-bold mb-1"><i class="fas fa-exchange-alt mr-1"></i> Status Uang Pribadi (Reimburse)</p>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-200">${trx.reimburse.method}</p>
+                            <p class="text-xs font-mono text-gray-600 dark:text-gray-400">${trx.reimburse.account}</p>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded bg-${isPaid ? 'green' : 'orange'}-500 text-white shadow-sm self-start sm:self-auto">${trx.reimburse.status}</span>
+                    </div>
+                </div>`;
+            }
                 
             if(trx.receipt) {
-                html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded">`;
+                html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded mt-3">`;
             }
             
             // Tambahan: Tombol Aksi di Bawah Detail Modal
@@ -945,7 +972,15 @@
 
         function cancelEdit() { document.getElementById('transaction-form').reset(); document.getElementById('edit-id').value = ''; document.getElementById('date').valueAsDate = new Date(); document.getElementById('items-container').innerHTML = ''; addRowData('', '', 'pcs', ''); document.querySelector('input[name="type"][value="expense"]').checked = true; toggleFormMode(); toggleReimburseFields(); document.getElementById('cancel-edit-btn').classList.add('hidden'); removeReceipt(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         
-        function init() { transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); renderList(); handleDashFilterChange(); }
+        function init() { 
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); 
+            renderList(); 
+            handleDashFilterChange(); 
+            // Pastikan tab admin langsung ke-refresh jika modal admin sedang terbuka
+            if(document.getElementById('settings-modal').classList.contains('active')) {
+                renderReimburseAdminList();
+            }
+        }
         
         function setTheme(theme) { if (theme === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); localStorage.setItem('theme', theme); }
         function showToast(msg, type = 'success') { const toast = document.getElementById('toast'); toast.className = `toast flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border text-sm font-bold ${type === 'success' ? 'bg-green-100 text-green-700' : (type === 'warning' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700')}`; document.getElementById('toast-icon').className = `fas ${type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'} text-lg`; document.getElementById('toast-msg').innerText = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
@@ -958,7 +993,66 @@
             if (tab === 'reimburse') { document.getElementById('tab-reimburse').className = act; document.getElementById('settings-reimburse').classList.remove('hidden'); renderReimburseAdminList(); } else if (tab === 'data') { document.getElementById('tab-data').className = act; document.getElementById('settings-data').classList.remove('hidden'); }
         }
 
-        function renderReimburseAdminList() { const listEl = document.getElementById('reimburse-list'); listEl.innerHTML = ''; transactions.filter(t => t.reimburse && t.reimburse.active).forEach(trx => { const el = document.createElement('div'); el.className = `p-3 bg-white rounded-lg border shadow-sm`; el.innerHTML = `<p class="font-bold">${trx.category || 'Pengeluaran'} - ${formatRupiah(trx.amount)}</p><p class="text-xs">${trx.reimburse.method}: ${trx.reimburse.account}</p>`; listEl.appendChild(el); }); }
+        function markReimbursePaid(id) {
+            if(!confirm('Apakah Anda yakin sudah mentransfer dan ingin mengubah status menjadi Lunas?')) return;
+            const trx = transactions.find(t => String(t.id) === String(id));
+            if(!trx) return;
+            
+            trx.reimburse.status = 'Sudah Ditransfer';
+            saveWithVerification(trx, true); // Sinkronisasi otomatis ke cloud
+            renderReimburseAdminList(); // Langsung perbarui tampilan list modal 
+            showToast('Reimburse berhasil ditandai lunas!', 'success');
+        }
+
+        function renderReimburseAdminList() { 
+            const listEl = document.getElementById('reimburse-list'); 
+            listEl.innerHTML = ''; 
+            
+            const reimburseTrx = transactions.filter(t => t.reimburse && t.reimburse.active);
+            
+            if (reimburseTrx.length === 0) {
+                listEl.innerHTML = '<p class="text-sm text-gray-500 italic text-center py-4">Tidak ada request reimburse untuk saat ini.</p>';
+                return;
+            }
+
+            reimburseTrx.forEach(trx => { 
+                let displayName = '';
+                if (trx.type === 'income') {
+                    displayName = (trx.note && trx.note.trim() !== '') ? trx.note : 'Pemasukan';
+                } else if (trx.items && trx.items.length > 0) {
+                    displayName = trx.items.map(item => item.name).join(', ');
+                }
+                if (!displayName) displayName = 'Pengeluaran';
+
+                const isPaid = trx.reimburse.status === 'Sudah Ditransfer';
+                const statusBadge = isPaid
+                    ? `<span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded font-bold border border-green-200"><i class="fas fa-check-double mr-1"></i>Lunas</span>`
+                    : `<span class="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded font-bold border border-orange-200"><i class="fas fa-clock mr-1"></i>Pending</span>`;
+
+                const btnHtml = isPaid
+                    ? `<button disabled class="w-full mt-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 text-xs font-bold rounded-lg cursor-not-allowed border border-gray-200 dark:border-gray-600"><i class="fas fa-check-circle mr-1"></i> Selesai Ditransfer</button>`
+                    : `<button onclick="markReimbursePaid('${trx.id}')" class="w-full mt-3 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-lg shadow-sm transition active:scale-95"><i class="fas fa-paper-plane mr-1"></i> Tandai Sudah Ditransfer</button>`;
+
+                const el = document.createElement('div'); 
+                el.className = `p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative`; 
+                el.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="pr-2">
+                            <p class="font-bold text-sm text-gray-800 dark:text-gray-100 line-clamp-1">${displayName}</p>
+                            <p class="text-xs text-gray-500 font-mono mt-0.5">${formatRupiah(trx.amount)} &bull; ${formatDate(trx.date)}</p>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-900 p-2.5 rounded text-xs border border-gray-100 dark:border-gray-700">
+                        <p class="text-gray-500 mb-1">Tujuan Transfer:</p>
+                        <p class="font-bold text-gray-800 dark:text-gray-200"><i class="fas fa-university mr-1 text-gurmie-orange"></i> ${trx.reimburse.method}</p>
+                        <p class="font-mono text-blue-600 dark:text-blue-400 mt-0.5"><i class="fas fa-credit-card mr-1 text-gray-400"></i> ${trx.reimburse.account}</p>
+                    </div>
+                    ${btnHtml}
+                `; 
+                listEl.appendChild(el); 
+            }); 
+        }
 
         // ==========================================
         //  SISTEM ANALITIK & EXPORT EXCEL
