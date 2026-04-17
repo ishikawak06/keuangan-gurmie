@@ -7,6 +7,18 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    
+    <!-- KONFIGURASI ICON & HOME SCREEN (PWA) -->
+    <meta name="theme-color" content="#f97316">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Gurmie">
+    <meta name="application-name" content="Gurmie">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ishikawak06/keuangan-gurmie/refs/heads/main/Desain%20tanpa%20judul222.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ishikawak06/keuangan-gurmie/refs/heads/main/Desain%20tanpa%20judul222.png">
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/ishikawak06/keuangan-gurmie/refs/heads/main/Desain%20tanpa%20judul222.png">
+
     <title>Sistem Manajemen Keuangan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -81,14 +93,20 @@
 
     <!-- HEADER -->
     <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 transition-colors">
-        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gurmie-orange to-gurmie-red flex items-center justify-center text-white shadow-lg shadow-orange-500/30 relative">
+        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gurmie-orange to-gurmie-red flex items-center justify-center text-white shadow-lg shadow-orange-500/30 relative flex-shrink-0">
                     <i class="fas fa-wallet text-sm"></i>
                 </div>
-                <h1 class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">Gurmie<span class="text-gurmie-red">Finance</span></h1>
+                <h1 class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 flex-shrink-0">Gurmie<span class="text-gurmie-red">Finance</span></h1>
+                
+                <!-- INDIKATOR HARI & QUOTE -->
+                <div class="flex flex-col ml-2 sm:ml-3 pl-3 sm:pl-4 border-l-2 border-gray-200 dark:border-gray-700 justify-center min-w-0">
+                    <span class="text-xs sm:text-sm font-extrabold text-gurmie-orange uppercase tracking-wider whitespace-nowrap leading-tight" id="store-day">Hari ke-1</span>
+                    <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 italic truncate w-full leading-tight mt-0.5" id="store-quote">Memuat...</span>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-shrink-0">
                 <button id="btn-sync" onclick="forceSync()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-blue-500 transition shadow-inner border border-gray-200 dark:border-gray-700" title="Tarik Data dari Cloud">
                     <i class="fas fa-cloud-download-alt"></i>
                 </button>
@@ -152,6 +170,24 @@
             </div>
         </section>
 
+        <!-- AI INSIGHT SECTION (GEMINI) -->
+        <section id="ai-insight-section" class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-4 shadow-sm border border-indigo-100 dark:border-indigo-800/30 flex gap-4 items-start transition-all overflow-hidden relative">
+            <div class="absolute -right-4 -top-4 opacity-10 pointer-events-none">
+                <i class="fas fa-robot text-8xl"></i>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0 z-10 shadow-sm border border-indigo-200 dark:border-indigo-800 overflow-hidden">
+                <img src="https://raw.githubusercontent.com/ishikawak06/keuangan-gurmie/refs/heads/main/Desain%20tanpa%20judul65665.png" alt="CEO Gurmie" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1 z-10">
+                <h3 class="text-[11px] font-extrabold text-indigo-800 dark:text-indigo-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 opacity-80">
+                    Saran CEO Gurmie
+                </h3>
+                <p id="ai-insight-text" class="text-sm text-indigo-900 dark:text-indigo-100 leading-relaxed font-medium">
+                    Sedang menghubungkan ke AI...
+                </p>
+            </div>
+        </section>
+
         <!-- FORM TRANSAKSI UTAMA -->
         <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
             <div class="bg-gray-50 dark:bg-gray-900 p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -185,7 +221,7 @@
                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5"><i class="fas fa-money-bill-wave text-gray-400 mr-1"></i> Nominal Pemasukan <span class="text-red-500">*</span></label>
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">Rp</span>
-                        <input type="number" id="nominal-input" min="0" placeholder="0" class="w-full pl-12 p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-green-500 outline-none transition font-mono font-bold text-lg text-green-600 dark:text-green-500 shadow-inner">
+                        <input type="text" id="nominal-input" inputmode="numeric" placeholder="0" oninput="formatInputRibuan(event)" class="w-full pl-12 p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-green-500 outline-none transition font-mono font-bold text-lg text-green-600 dark:text-green-500 shadow-inner">
                     </div>
                 </div>
 
@@ -280,6 +316,82 @@
             </div>
             <div id="transaction-list" class="space-y-3"></div>
         </section>
+
+        <!-- STORE STATUS & TIMER SECTION -->
+        <section id="store-status-section" class="rounded-2xl p-6 shadow-sm border transition-all duration-500 flex flex-col items-center justify-center text-center relative overflow-hidden">
+            <div class="z-10 flex flex-col items-center gap-2">
+                <div id="status-icon" class="text-4xl mb-1 animate-bounce"></div>
+                <h3 id="status-title" class="text-xl font-extrabold tracking-widest uppercase">Memuat Status...</h3>
+                <p id="status-timer" class="text-4xl sm:text-5xl font-mono font-bold my-2 tracking-tight drop-shadow-md"></p>
+                <p id="status-quote" class="text-sm sm:text-base font-medium italic mt-2 opacity-90 px-2 leading-relaxed max-w-lg drop-shadow-sm"></p>
+            </div>
+            <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none transition-all duration-1000 transform group-hover:scale-110">
+                <i id="status-bg-icon" class="fas fa-clock text-[120px]"></i>
+            </div>
+        </section>
+
+        <!-- KEWAJIBAN KARYAWAN SECTION (DINAMIS) -->
+        <section id="kewajiban-karyawan-section" class="rounded-2xl p-5 shadow-sm border transition-all duration-1000 flex flex-col gap-4 relative overflow-hidden mt-6">
+            <!-- Background Gradient Layer -->
+            <div id="kewajiban-bg" class="absolute inset-0 opacity-10 pointer-events-none transition-colors duration-1000"></div>
+
+            <div class="z-10 flex items-center justify-between border-b pb-3" id="kewajiban-header-border">
+                <h3 id="kewajiban-header-text" class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-clipboard-list"></i> Kewajiban Karyawan
+                </h3>
+                <span id="kewajiban-time-label" class="text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm uppercase tracking-wider">Memuat Waktu</span>
+            </div>
+
+            <div class="z-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- Sholat -->
+                <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col gap-2 relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                    <div class="absolute -right-3 -top-3 opacity-5 text-blue-500 text-6xl group-hover:rotate-12 transition-transform"><i class="fas fa-mosque"></i></div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                            <i class="fas fa-pray text-sm"></i>
+                        </div>
+                        <p class="font-bold text-sm text-gray-800 dark:text-gray-100">1. Sholat Tepat Waktu</p>
+                    </div>
+                    <p id="kewajiban-sholat-quote" class="text-xs text-gray-600 dark:text-gray-400 italic flex-1 leading-relaxed"></p>
+                </div>
+
+                <!-- Quran -->
+                <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col gap-2 relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                    <div class="absolute -right-3 -top-3 opacity-5 text-emerald-500 text-6xl group-hover:rotate-12 transition-transform"><i class="fas fa-book-quran"></i></div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                            <i class="fas fa-book-open text-sm"></i>
+                        </div>
+                        <p class="font-bold text-sm text-gray-800 dark:text-gray-100">2. Baca Qur'an</p>
+                    </div>
+                    <p id="kewajiban-quran-quote" class="text-xs text-gray-600 dark:text-gray-400 italic flex-1 leading-relaxed"></p>
+                </div>
+
+                <!-- Sedekah -->
+                <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col gap-2 relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                    <div class="absolute -right-3 -top-3 opacity-5 text-rose-500 text-6xl group-hover:rotate-12 transition-transform"><i class="fas fa-coins"></i></div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 flex-shrink-0">
+                            <i class="fas fa-hand-holding-heart text-sm"></i>
+                        </div>
+                        <p class="font-bold text-sm text-gray-800 dark:text-gray-100">3. Sedekah Rutin</p>
+                    </div>
+                    <p id="kewajiban-sedekah-quote" class="text-xs text-gray-600 dark:text-gray-400 italic flex-1 leading-relaxed"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TUGAS IBADAH TIM SECTION -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-gray-700 transition-colors mt-6">
+            <h3 class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2 mb-4 text-gray-800 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <div class="w-6 h-6 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs"><i class="fas fa-user-check"></i></div> 
+                Tugas Ibadah Harian Tim
+            </h3>
+            <div id="tugas-tim-container" class="space-y-4">
+                <!-- Di-render oleh JavaScript -->
+            </div>
+        </section>
+
     </main>
 
     <!-- FLOATING BOTTOM NAV -->
@@ -361,8 +473,20 @@
                         <option value="7days">7 Hari Terakhir</option>
                         <option value="month">Bulan Ini</option>
                         <option value="year">Tahun Ini</option>
+                        <option value="custom">Kustom Tanggal</option>
                         <option value="all" selected>Semua Data</option>
                     </select>
+
+                    <div id="ana-custom-dates" class="hidden mt-2 grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-500 mb-1">Mulai</label>
+                            <input type="date" id="ana-start-date" class="w-full p-2 rounded bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-xs outline-none focus:ring-2 focus:ring-blue-500" onchange="updateAnalytics()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-500 mb-1">Sampai</label>
+                            <input type="date" id="ana-end-date" class="w-full p-2 rounded bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-xs outline-none focus:ring-2 focus:ring-blue-500" onchange="updateAnalytics()">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Summary Cards -->
@@ -390,10 +514,36 @@
         </div>
     </div>
 
+    <!-- MODAL WHAT'S NEW (CHANGELOG) -->
+    <div id="whatsnew-modal" class="modal fixed inset-0 z-[10000] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-900 w-full sm:w-[400px] rounded-2xl flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden scale-100 transform transition-all duration-300">
+            <!-- HEADER MODAL HANYA LOGO -->
+            <div class="bg-gradient-to-r from-gurmie-orange to-gurmie-red p-8 flex justify-center items-center">
+                <img src="https://raw.githubusercontent.com/ishikawak06/keuangan-gurmie/refs/heads/main/ChatGPT%20Image%20Apr%2017%2C%202026%2C%2009_57_39%20PM.png" alt="Update Logo" class="w-48 h-48 object-contain animate-bounce drop-shadow-2xl">
+            </div>
+            
+            <div class="p-6 space-y-4 text-sm text-gray-700 dark:text-gray-300">
+                <div class="text-center border-b border-gray-100 dark:border-gray-800 pb-4 mb-4">
+                    <h3 class="font-extrabold text-2xl text-gray-900 dark:text-white mb-2">Update Terbaru!</h3>
+                    <p class="text-xs font-mono bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 inline-block px-3 py-1 rounded-full shadow-inner border border-gray-200 dark:border-gray-700">Versi <span id="whatsnew-version"></span></p>
+                </div>
+                <p>Halo! Sistem baru saja diperbarui dengan fitur-fitur baru demi efisiensi dan kenyamanan Anda:</p>
+                <ul class="space-y-2">
+                    <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-green-500 mt-0.5"></i> <span><b class="text-gray-800 dark:text-white">AI Gemini Terintegrasi:</b> Memberikan analisa otomatis untuk warung mie ayam di dashboard.</span></li>
+                    <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-green-500 mt-0.5"></i> <span>Qty Barang otomatis diset ke-1.</span></li>
+                    <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-green-500 mt-0.5"></i> <span>Indikator Hari Buka Toko beserta Kutipan Penyemangat harian.</span></li>
+                    <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-green-500 mt-0.5"></i> <span>Timer & Status Toko dengan kutipan Islami.</span></li>
+                    <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-green-500 mt-0.5"></i> <span><b class="text-gray-800 dark:text-white">Daftar Tugas Ibadah Tim:</b> Notifikasi langsung dan rotasi tugas untuk Widi Asih, Faqih, & Khairulloh.</span></li>
+                </ul>
+                <button onclick="closeModal('whatsnew-modal')" class="w-full mt-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-white font-bold rounded-xl transition shadow-sm border border-gray-200 dark:border-gray-600">Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI VERSI & API ---
-        const APP_VERSION = "2.9.2"; // Versi diupdate ke 2.9.2 (Penambahan Logika Reimburse Admin)
+        const APP_VERSION = "2.9.7"; // Versi diupdate ke 2.9.7 (Tugas Ibadah Harian Karyawan)
         const API_URL = "https://script.google.com/macros/s/AKfycby5qHzPemaYLKqh7VN0yrjkkSDZUc2I_QFrsYqzjxGJM5b4Y2rvM_VWDop-W-vrkGgr/exec"; 
 
         let transactions = []; 
@@ -403,10 +553,8 @@
         let currentReceiptBase64 = null;
         let analyticChart = null;
         let filteredAnalyticData = [];
+        let lastInsightData = { inc: -1, exp: -1 }; // Untuk mencegah spam API AI
 
-        // ==========================================
-        //  FUNGSI NUCLEAR CACHE CLEAR (SUPER AMPUH)
-        // ==========================================
         async function nukeBrowserCaches() {
             console.log("Memulai penghancuran cache...");
             if ('serviceWorker' in navigator) {
@@ -446,6 +594,8 @@
             if(tempTrx) localStorage.setItem('transactions', tempTrx);
             
             localStorage.setItem('app_version', APP_VERSION);
+            sessionStorage.setItem('show_changelog', APP_VERSION); // Tampilkan popup setelah reset
+
             window.location.href = window.location.pathname + '?reset=' + new Date().getTime();
         }
 
@@ -461,6 +611,7 @@
                 document.getElementById('initial-load-text').innerText = "Mengupdate Aplikasi ke Versi Baru...";
                 await nukeBrowserCaches(); // Bersihkan cache lama
                 localStorage.setItem('app_version', APP_VERSION);
+                sessionStorage.setItem('show_changelog', APP_VERSION); // Penanda untuk memunculkan modal update
             }
 
             setTheme(savedTheme);
@@ -468,7 +619,19 @@
             addEmptyRow(); 
             renderReimburseSaved(); 
             toggleFormMode(); 
+            updateStoreCounter();
             
+            // Inisialisasi Timer Store Status
+            updateStoreStatusTimer();
+            setInterval(updateStoreStatusTimer, 1000);
+
+            // Inisialisasi Kewajiban Karyawan Dinamis
+            updateKewajibanUI();
+            setInterval(updateKewajibanUI, 60000); // Update setiap 1 menit
+            
+            // Inisialisasi Checklist Tugas Ibadah
+            renderTugasIbadahTim();
+
             const loadStatusText = document.getElementById('initial-load-text');
             let syncSuccess = false;
             const maxRetries = 3;
@@ -504,7 +667,16 @@
             setTimeout(() => {
                 const loader = document.getElementById('initial-loader');
                 loader.style.opacity = '0';
-                setTimeout(() => loader.classList.add('hidden'), 500); 
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    
+                    // FASE 4: TAMPILKAN CHANGELOG JIKA BARU DIUPDATE
+                    if (sessionStorage.getItem('show_changelog') === APP_VERSION) {
+                        document.getElementById('whatsnew-version').innerText = APP_VERSION;
+                        document.getElementById('whatsnew-modal').classList.add('active');
+                        sessionStorage.removeItem('show_changelog');
+                    }
+                }, 500); 
             }, 500);
         });
 
@@ -556,6 +728,419 @@
         const formatRupiah = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
         const generateID = () => Math.floor(Math.random() * 100000000).toString();
         const formatDate = (dateStr) => { if(!dateStr) return '-'; const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00'); return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); };
+        function formatInputRibuan(e) { let val = e.target.value.replace(/[^0-9]/g, ''); e.target.value = val ? new Intl.NumberFormat('id-ID').format(parseInt(val, 10)) : ''; }
+
+        // ==========================================
+        // FITUR HARI BUKA TOKO & MOTIVASI
+        // ==========================================
+        function updateStoreCounter() {
+            const startDate = new Date(2026, 3, 17); // 17 April 2026 (Bulan di JS dimulai dari 0 = Jan, 3 = Apr)
+            const now = new Date();
+            
+            // Format waktu menjadi 00:00 agar murni menghitung pergeseran hari
+            const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            const current = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const diffTime = current - start;
+            let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Jaga-jaga jika dibuka sebelum 17 April
+            if (diffDays < 1) diffDays = 1; 
+
+            const dayEl = document.getElementById('store-day');
+            const quoteEl = document.getElementById('store-quote');
+            
+            if (dayEl) dayEl.innerText = `HARI KE-${diffDays}`;
+
+            const quotes = [
+                "Bismillah, gaspol hari pertama! 🚀",
+                "Satu mangkok penuh senyuman! 😊",
+                "Konsisten itu kunci cuan.",
+                "Hari ini harus lebih laris! 💪",
+                "Kuah gurih, rezeki mengalir! 🍜",
+                "Mie mantap, cuan makin lebat! 💸",
+                "Jaga kualitas, pelanggan pasti balik.",
+                "Semangat pantang mundur bosku!",
+                "Pelanggan puas, hati senang.",
+                "Jangan lupa sedekah biar berkah. 😇",
+                "Fokus pada rasa, biarkan untung yang bicara.",
+                "Siapkan mangkok, panaskan kuah, ayo jualan!"
+            ];
+            
+            if (quoteEl) {
+                // Algoritma modulo agar quote berputar terus setiap harinya
+                const quoteIndex = (diffDays - 1) % quotes.length;
+                quoteEl.innerText = `"${quotes[quoteIndex]}"`;
+            }
+        }
+
+        // ==========================================
+        // FITUR TIMER & STATUS WARUNG
+        // ==========================================
+        function updateStoreStatusTimer() {
+            const now = new Date();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const s = now.getSeconds();
+
+            const statusSection = document.getElementById('store-status-section');
+            const titleEl = document.getElementById('status-title');
+            const timerEl = document.getElementById('status-timer');
+            const quoteEl = document.getElementById('status-quote');
+            const iconEl = document.getElementById('status-icon');
+            const bgIconEl = document.getElementById('status-bg-icon');
+
+            if (!statusSection) return;
+
+            // Convert to total seconds for easy calculation
+            const currentTotalSeconds = h * 3600 + m * 60 + s;
+            const openTimeSeconds = 10 * 3600; // 10:00:00
+            const closeTimeSeconds = 21 * 3600; // 21:00:00
+
+            let status = "";
+            let timerStr = "";
+            let quote = "";
+            let bgClass = "";
+            let icon = "";
+            let bgIcon = "";
+
+            if (h >= 9 && h < 10) {
+                // Persiapan Buka (09:00 - 09:59)
+                status = "Persiapan Buka";
+                const diff = openTimeSeconds - currentTotalSeconds;
+                timerStr = `Buka dalam ${formatTime(diff)}`;
+                quote = "Awali hari dengan Bismillah. Siapkan bahan baku dengan niat mencari rezeki halal. InsyaAllah berkah untuk keluarga tercinta. Yuk, rapikan warung!";
+                bgClass = "bg-gradient-to-br from-yellow-50 to-orange-100 border-yellow-200 text-yellow-900 dark:from-yellow-900/40 dark:to-orange-900/40 dark:border-yellow-700/50 dark:text-yellow-100";
+                icon = "🧹";
+                bgIcon = "fa-store";
+            } else if (currentTotalSeconds >= openTimeSeconds && currentTotalSeconds < closeTimeSeconds) {
+                // Warung Buka (10:00 - 20:59)
+                const diff = closeTimeSeconds - currentTotalSeconds;
+                
+                if (diff <= 3600) { 
+                    // Persiapan Tutup (Last 1 hour, 20:00 - 20:59)
+                    status = "Persiapan Tutup";
+                    timerStr = `Tutup dalam ${formatTime(diff)}`;
+                    quote = "Alhamdulillah atas rezeki hari ini. Silakan layani sisa pelanggan lalu mulailah beres-beres perlahan, pastikan kompor dan listrik aman.";
+                    bgClass = "bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 text-orange-900 dark:from-orange-900/40 dark:to-red-900/40 dark:border-orange-700/50 dark:text-orange-100";
+                    icon = "📦";
+                    bgIcon = "fa-box-open";
+                } else {
+                    // Normal Buka (10:00 - 19:59)
+                    status = "Warung Buka";
+                    timerStr = `Tutup dalam ${formatTime(diff)}`;
+                    quote = "Layanilah pelanggan dengan senyuman tulus. Setiap keringat yang menetes saat ikhtiar mencari nafkah, insyaAllah dicatat sebagai ibadah di sisi-Nya.";
+                    bgClass = "bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 text-green-900 dark:from-green-900/40 dark:to-emerald-900/40 dark:border-green-700/50 dark:text-green-100";
+                    icon = "🍜";
+                    bgIcon = "fa-concierge-bell";
+                }
+            } else {
+                // Tutup / Waktunya Istirahat (21:00 - 08:59)
+                status = "Waktunya Istirahat";
+                
+                let diffToOpen = 0;
+                if (h >= 21) {
+                    diffToOpen = (24 * 3600 - currentTotalSeconds) + openTimeSeconds;
+                } else {
+                    diffToOpen = openTimeSeconds - currentTotalSeconds;
+                }
+                
+                timerStr = `Buka dalam ${formatTime(diffToOpen)}`;
+                quote = "Tugasmu hari ini telah selesai. Pulanglah, ada keluarga yang menanti. Semoga lelahmu lillah, bacalah doa sebelum tidur agar esok terbangun penuh berkah.";
+                bgClass = "bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200 text-blue-900 dark:from-blue-900/40 dark:to-indigo-900/40 dark:border-blue-700/50 dark:text-blue-100";
+                icon = "🌙";
+                bgIcon = "fa-bed";
+            }
+
+            titleEl.innerText = status;
+            timerEl.innerText = timerStr;
+            quoteEl.innerText = `"${quote}"`;
+            iconEl.innerText = icon;
+            bgIconEl.className = `fas ${bgIcon} text-[120px]`;
+            // Preserve the original utility classes and append dynamic colors
+            statusSection.className = `rounded-2xl p-6 shadow-sm border transition-colors flex flex-col items-center justify-center text-center relative overflow-hidden ${bgClass}`;
+        }
+
+        function formatTime(totalSeconds) {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        // ==========================================
+        // FITUR KEWAJIBAN KARYAWAN (DINAMIS SESUAI WAKTU)
+        // ==========================================
+        function updateKewajibanUI() {
+            const now = new Date();
+            const h = now.getHours();
+
+            const section = document.getElementById('kewajiban-karyawan-section');
+            const bgLayer = document.getElementById('kewajiban-bg');
+            const timeLabel = document.getElementById('kewajiban-time-label');
+            const sholatQuote = document.getElementById('kewajiban-sholat-quote');
+            const quranQuote = document.getElementById('kewajiban-quran-quote');
+            const sedekahQuote = document.getElementById('kewajiban-sedekah-quote');
+
+            if (!section) return;
+
+            let period = "";
+            let themeClass = "";
+            let borderClass = "";
+            let textClass = "";
+            let sholatQ = "";
+            let quranQ = "";
+            let sedekahQ = "";
+
+            if (h >= 4 && h < 7) {
+                // SUBUH & PAGI AWAL
+                period = "Zona Waktu Subuh";
+                themeClass = "bg-gradient-to-r from-purple-500 to-pink-500";
+                borderClass = "border-purple-200 dark:border-purple-800";
+                textClass = "text-purple-700 dark:text-purple-300";
+                sholatQ = "Waktu Subuh! Jangan sampai kesiangan. Shalat 2 rakaat fajar lebih baik dari dunia dan isinya.";
+                quranQ = "Awali pagimu dengan membaca Al-Qur'an agar pikiran tenang dan rezeki warung hari ini lancar.";
+                sedekahQ = "Malaikat turun mendoakan hamba yang bersedekah di waktu Subuh. Yuk sedekah walau Rp 1.000!";
+            } else if (h >= 7 && h < 11) {
+                // PAGI / DHUHA
+                period = "Zona Waktu Dhuha";
+                themeClass = "bg-gradient-to-r from-cyan-400 to-blue-500";
+                borderClass = "border-blue-200 dark:border-blue-800";
+                textClass = "text-blue-700 dark:text-blue-300";
+                sholatQ = "Kerjaan warung lagi santai? Sempatkan Shalat Dhuha walau 2 rakaat. Ini adalah kunci pembuka pintu rezeki.";
+                quranQ = "Sambil persiapan bahan baku mie ayam, basahi lisan dengan dzikir atau dengarkan murottal.";
+                sedekahQ = "Niatkan kerja mencari nafkah halal hari ini sebagai ibadah dan sedekah bagi keluarga di rumah.";
+            } else if (h >= 11 && h < 15) {
+                // DZUHUR
+                period = "Zona Waktu Dzuhur";
+                themeClass = "bg-gradient-to-r from-yellow-400 to-orange-500";
+                borderClass = "border-orange-200 dark:border-orange-800";
+                textClass = "text-orange-700 dark:text-orange-300";
+                sholatQ = "Adzan Dzuhur memanggil! Tinggalkan cucian mangkok sejenak, wudhu bergantian, utamakan panggilan Allah.";
+                quranQ = "Setelah shalat, luangkan 5 menit saja untuk baca 1 halaman Al-Qur'an agar hati selalu terpaut.";
+                sedekahQ = "Berbagi senyum dan pelayanan terbaik saat jam makan siang yang ramai adalah bentuk sedekah lho!";
+            } else if (h >= 15 && h < 18) {
+                // ASHAR
+                period = "Zona Waktu Ashar";
+                themeClass = "bg-gradient-to-r from-orange-500 to-red-500";
+                borderClass = "border-red-200 dark:border-red-800";
+                textClass = "text-red-700 dark:text-red-300";
+                sholatQ = "Waktu Ashar. Jagalah shalat Wustha (pertengahan). Jangan sampai lelah kerja melalaikan kewajiban ini.";
+                quranQ = "Hati mulai terasa lelah sore ini? Segarkan kembali dengan bacaan suci walau hanya beberapa ayat.";
+                sedekahQ = "Alhamdulillah pemasukan hari ini mulai terlihat. Masukkan seribu rupiah ke kotak infaq agar berkah.";
+            } else if (h >= 18 && h < 19) {
+                // MAGHRIB
+                period = "Zona Waktu Maghrib";
+                themeClass = "bg-gradient-to-r from-red-600 to-purple-800";
+                borderClass = "border-red-200 dark:border-red-800";
+                textClass = "text-red-700 dark:text-red-300";
+                sholatQ = "Matahari terbenam. Waktu Maghrib sangat singkat! Tutup meja depan sebentar dan segerakan shalat.";
+                quranQ = "Waktu emas antara Maghrib dan Isya, sangat mulia diisi dengan tilawah sebelum lanjut beres-beres.";
+                sedekahQ = "Memberi minum/makan ringan ke teman karyawan saat lelah seharian adalah sedekah manis sore ini.";
+            } else {
+                // ISYA & MALAM
+                period = "Zona Waktu Isya & Malam";
+                themeClass = "bg-gradient-to-r from-slate-800 to-indigo-900";
+                borderClass = "border-indigo-200 dark:border-indigo-800";
+                textClass = "text-indigo-700 dark:text-indigo-300";
+                sholatQ = "Tutup hari ini dengan shalat Isya. Jangan sampai ketiduran sebelum menunaikan hak Allah.";
+                quranQ = "Akhiri malam lelahmu dengan Surah Al-Mulk. Semoga rezeki warung kita diberkahi dan kita dijaga saat tidur.";
+                sedekahQ = "Maafkan kesalahan sesama tim kerja hari ini. Memberi maaf adalah sedekah hati yang paling mulia.";
+            }
+
+            // Update DOM Elements
+            timeLabel.innerText = period;
+            bgLayer.className = `absolute inset-0 opacity-15 pointer-events-none transition-colors duration-1000 ${themeClass}`;
+            section.className = `rounded-2xl p-5 shadow-sm border transition-all duration-1000 flex flex-col gap-4 relative overflow-hidden ${borderClass}`;
+            
+            document.getElementById('kewajiban-header-border').className = `z-10 flex items-center justify-between border-b pb-3 ${borderClass.replace('border-', 'border-b-').replace(' dark:border-', ' dark:border-b-')}`;
+            document.getElementById('kewajiban-header-text').className = `font-extrabold text-sm uppercase tracking-wider flex items-center gap-2 ${textClass}`;
+            timeLabel.className = `text-[10px] font-bold px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/10 ${textClass}`;
+
+            sholatQuote.innerHTML = `"${sholatQ}"`;
+            quranQuote.innerHTML = `"${quranQ}"`;
+            sedekahQuote.innerHTML = `"${sedekahQ}"`;
+        }
+
+        // ==========================================
+        // FITUR TUGAS IBADAH HARIAN (SPESIFIK KARYAWAN)
+        // ==========================================
+        function getTugasKaryawan(diffDays) {
+            // Level tugas berotasi berdasarkan hari (modulo 3)
+            const level = (diffDays - 1) % 3;
+
+            const tugasMbakWidi = [
+                { task: "Membaca Basmalah & Shalawat 10x sebelum meracik bumbu.", diri: "Hati tenang & selalu ingat Allah saat bekerja.", warung: "Rasa masakan diberkahi, lezat, dan mengundang selera pelanggan." },
+                { task: "Membaca 'Ya Razzaq' 33x saat memasak dan mengaduk kuah.", diri: "Melatih kepasrahan kepada Sang Pemberi Rezeki.", warung: "Kuah mie ayam membawa daya pikat keberkahan." },
+                { task: "Berdoa diam-diam agar pelanggan yang makan diberi kesehatan.", diri: "Mendapat doa kebaikan balik dari para malaikat.", warung: "Pelanggan puas, kenyang, dan menjadi pelanggan loyal." }
+            ];
+
+            const tugasMasFaqih = [
+                { task: "Tersenyum ramah & mengucapkan salam (dalam hati) tiap mengantar pesanan.", diri: "Tercatat sebagai sedekah senyum yang menggugurkan dosa.", warung: "Pelanggan merasa dihargai dan disambut sangat hangat." },
+                { task: "Membersihkan meja/lantai sambil ber-istighfar.", diri: "Setiap debu yang dibersihkan menggugurkan dosa-dosa kecil.", warung: "Suasana warung selalu kinclong, bersih, dan nyaman." },
+                { task: "Membaca doa kelancaran saat menyusun/mengecek stok barang pagi hari.", diri: "Melatih rasa tawakkal dalam ikhtiar harian.", warung: "Barang/stok jadi awet, tidak cepat rusak, dan efisien." }
+            ];
+
+            const tugasPakKhairulloh = [
+                { task: "Membaca doa pembuka pintu rezeki sebelum mengecek buku kas/aplikasi.", diri: "Pikiran jernih, tenang, dan tidak mudah stres.", warung: "Keuangan warung berjalan lancar, aman, dan stabil." },
+                { task: "Niatkan sedekah Subuh (walau Rp1.000) untuk kebaikan keluarga & warung.", diri: "Rezeki keluarga di rumah menjadi lapang dan berkah.", warung: "Warung dijauhkan dari musibah atau kerugian tak terduga." },
+                { task: "Shalat Dhuha minimal 2 rakaat di sela-sela memantau warung.", diri: "Tubuh lebih sehat, rileks, dan dijauhkan dari sifat tamak.", warung: "Membuka pintu keberkahan dan rezeki langsung dari langit." }
+            ];
+
+            return [
+                { id: "Widi", name: "Widi Asih", icon: "fa-utensils", color: "red", data: tugasMbakWidi[level] },
+                { id: "Faqih", name: "Faqih", icon: "fa-box", color: "blue", data: tugasMasFaqih[level] },
+                { id: "Khairulloh", name: "Khairulloh", icon: "fa-laptop-house", color: "indigo", data: tugasPakKhairulloh[level] }
+            ];
+        }
+
+        function renderTugasIbadahTim() {
+            const container = document.getElementById('tugas-tim-container');
+            if(!container) return;
+
+            // Hitung hari buka toko
+            const start = new Date(2026, 3, 17);
+            const now = new Date();
+            const diffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            if (diffDays < 1) diffDays = 1;
+
+            const listTugas = getTugasKaryawan(diffDays);
+            
+            // Cek status hari ini di localStorage
+            const todayStr = now.toLocaleDateString('id-ID');
+            let savedStatus = JSON.parse(localStorage.getItem('tugasIbadahData')) || {};
+            if(savedStatus.date !== todayStr) {
+                savedStatus = { date: todayStr }; // Reset jika beda hari
+                localStorage.setItem('tugasIbadahData', JSON.stringify(savedStatus));
+            }
+
+            container.innerHTML = '';
+
+            listTugas.forEach(emp => {
+                const isChecked = savedStatus[emp.id] === true;
+                
+                const html = `
+                <div class="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-${emp.color}-300 dark:hover:border-${emp.color}-700 transition-colors">
+                    <label class="flex items-start gap-3 sm:gap-4 cursor-pointer group">
+                        <div class="relative flex-shrink-0 mt-1">
+                            <input type="checkbox" class="peer sr-only" ${isChecked ? 'checked' : ''} onchange="handleTugasCheck('${emp.id}', this)">
+                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center peer-checked:bg-${emp.color}-500 peer-checked:border-${emp.color}-500 transition-all shadow-sm">
+                                <i class="fas fa-check text-white opacity-0 peer-checked:opacity-100 text-xs sm:text-sm scale-50 peer-checked:scale-100 transition-all"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas ${emp.icon} text-${emp.color}-500 text-xs bg-${emp.color}-100 dark:bg-${emp.color}-900/30 p-1.5 rounded-full"></i>
+                                <h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${emp.name}</h4>
+                            </div>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 font-medium mb-2 leading-snug">"${emp.data.task}"</p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] sm:text-xs">
+                                <div class="bg-white dark:bg-gray-800 p-2 rounded border border-gray-100 dark:border-gray-700 shadow-sm flex items-start gap-1.5">
+                                    <i class="fas fa-user text-blue-500 mt-0.5"></i>
+                                    <div><span class="font-bold text-gray-600 dark:text-gray-400 block mb-0.5">Diri Sendiri:</span><span class="text-gray-500">${emp.data.diri}</span></div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-2 rounded border border-gray-100 dark:border-gray-700 shadow-sm flex items-start gap-1.5">
+                                    <i class="fas fa-store text-orange-500 mt-0.5"></i>
+                                    <div><span class="font-bold text-gray-600 dark:text-gray-400 block mb-0.5">Untuk Warung:</span><span class="text-gray-500">${emp.data.warung}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    <div id="notif-tugas-${emp.id}" class="hidden text-xs mt-3 p-2.5 rounded-lg border transition-all duration-300 list-enter shadow-sm"></div>
+                </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function handleTugasCheck(empId, checkbox) {
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('id-ID');
+            let savedStatus = JSON.parse(localStorage.getItem('tugasIbadahData')) || { date: todayStr };
+            
+            // Simpan status
+            savedStatus[empId] = checkbox.checked;
+            localStorage.setItem('tugasIbadahData', JSON.stringify(savedStatus));
+
+            // Tampilkan Notifikasi Inline (Bukan pop-up/toast, cukup di dalam kotaknya saja)
+            const notifEl = document.getElementById(`notif-tugas-${empId}`);
+            notifEl.classList.remove('hidden');
+
+            if (checkbox.checked) {
+                notifEl.className = "text-xs mt-3 p-2.5 rounded-lg border font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/50 list-enter shadow-sm";
+                notifEl.innerHTML = "<i class='fas fa-check-circle mr-1.5 text-green-500'></i> Alhamdulillah, tugas selesai! Semoga Allah mencatatnya sebagai amal jariyah yang berkah.";
+            } else {
+                notifEl.className = "text-xs mt-3 p-2.5 rounded-lg border font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/50 list-enter shadow-sm";
+                notifEl.innerHTML = "<i class='fas fa-exclamation-circle mr-1.5 text-orange-500'></i> Tugas belum diselesaikan. Jangan lupa dikerjakan ya jika ada waktu luang!";
+            }
+
+            // Sembunyikan notifikasi perlahan setelah 5 detik
+            setTimeout(() => {
+                notifEl.classList.add('hidden');
+            }, 6000);
+        }
+
+        // ==========================================
+        // FITUR AI GEMINI ANALISIS KEUANGAN
+        // ==========================================
+        async function getAIInsight(income, expense) {
+            const insightTextEl = document.getElementById('ai-insight-text');
+            if(!insightTextEl) return;
+            const balance = income - expense;
+            
+            if (income === 0 && expense === 0) {
+                insightTextEl.innerHTML = "Belum ada transaksi di periode ini. Yuk, mulai catat penjualan mie ayammu hari ini! 🍜";
+                return;
+            }
+
+            insightTextEl.innerHTML = '<span class="flex items-center gap-2"><i class="fas fa-circle-notch fa-spin text-indigo-500"></i> AI sedang meracik analisa...</span>';
+
+            const apiKey = ""; // API key digenerate environment
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const prompt = `Data Keuangan Warung Mie Ayam saat ini:
+            Pemasukan: Rp ${formatRupiah(income)}
+            Pengeluaran: Rp ${formatRupiah(expense)}
+            Saldo Bersih: Rp ${formatRupiah(balance)}
+            
+            Tolong berikan analisa super singkat (maksimal 2 kalimat pendek). Berikan kesan asisten yang ceria, memotivasi jualan mie ayam, dan beri peringatan halus kalau sedang rugi.`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: "Kamu adalah asisten AI pintar khusus bisnis warung Mie Ayam. Berikan komentar finansial yang relevan dalam bahasa Indonesia yang gaul, santai, namun profesional. Jawab maksimal 2 kalimat saja." }] }
+                    })
+                });
+
+                if(!response.ok) throw new Error("API Limit atau Error");
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if(text) {
+                    insightTextEl.innerHTML = text.replace(/\n/g, '<br>');
+                } else {
+                    throw new Error("No Text Output");
+                }
+            } catch (err) {
+                console.warn("AI Fetching Error:", err);
+                // Fallback (Cadangan bila AI ngadat)
+                let fallback = balance >= 0 
+                    ? `Mantap! Warung masih surplus <b>${formatRupiah(balance)}</b>. Pertahankan rasa mie ayamnya bosku! 🚀` 
+                    : `Sedang nombok nih. Yuk evaluasi lagi porsi dan bahan baku mie ayamnya agar segera untung! 💪`;
+                insightTextEl.innerHTML = fallback;
+            }
+        }
+        
+        function triggerAIInsight(inc, exp) {
+            if (lastInsightData.inc === inc && lastInsightData.exp === exp) return;
+            lastInsightData = { inc, exp };
+            getAIInsight(inc, exp);
+        }
 
         // ==========================================
         // SISA KODE LOGIKA UI APLIKASI (SAMA)
@@ -734,13 +1319,32 @@
         }
 
         function handleDashFilterChange() { const type = document.getElementById('dash-filter-type').value; const monthInput = document.getElementById('dash-filter-month'); const yearInput = document.getElementById('dash-filter-year'); monthInput.classList.add('hidden'); yearInput.classList.add('hidden'); if (type === 'custom_month') { monthInput.classList.remove('hidden'); if(!monthInput.value) monthInput.value = new Date().toISOString().slice(0, 7); } else if (type === 'custom_year') { yearInput.classList.remove('hidden'); if(!yearInput.value) yearInput.value = new Date().getFullYear(); } updateDashboard(); }
+        
         function updateDashboard() {
             const type = document.getElementById('dash-filter-type').value; let filtered = []; let label = ""; const now = new Date(); const currYear = now.getFullYear(); const currMonth = now.getMonth();
             if (type === 'this_month') { filtered = transactions.filter(t => { const d = new Date(t.date); return d.getFullYear() === currYear && d.getMonth() === currMonth; }); label = "Bulan Ini"; } else if (type === 'custom_month') { const mVal = document.getElementById('dash-filter-month').value; if (mVal) { const [y, m] = mVal.split('-'); filtered = transactions.filter(t => { const d = new Date(t.date); return d.getFullYear() == y && d.getMonth() == (m - 1); }); const dObj = new Date(y, m-1, 1); label = dObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }); } } else if (type === 'custom_year') { const yVal = document.getElementById('dash-filter-year').value; if (yVal) { filtered = transactions.filter(t => { const d = new Date(t.date); return d.getFullYear() == yVal; }); label = "Tahun " + yVal; } } else { filtered = transactions; label = "Semua Data"; }
             document.getElementById('dashboard-period-label').innerText = `Menampilkan data: ${label}`; const cards = document.getElementById('dashboard-cards'); const empty = document.getElementById('dashboard-empty');
             cards.style.opacity = 0;
+            
             setTimeout(() => {
-                if (filtered.length === 0) { cards.classList.add('hidden'); empty.classList.remove('hidden'); } else { cards.classList.remove('hidden'); empty.classList.add('hidden'); let inc = 0, exp = 0; filtered.forEach(t => { if (t.type === 'income') inc += t.amount; else exp += t.amount; }); document.getElementById('total-income').innerText = `+ ${formatRupiah(inc)}`; document.getElementById('total-expense').innerText = `- ${formatRupiah(exp)}`; document.getElementById('total-balance').innerText = formatRupiah(inc - exp); document.getElementById('total-balance').className = `text-3xl font-bold font-mono transition-colors ${inc - exp >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-500'}`; } cards.style.opacity = 1;
+                if (filtered.length === 0) { 
+                    cards.classList.add('hidden'); 
+                    empty.classList.remove('hidden'); 
+                    triggerAIInsight(0, 0); // Panggil AI untuk inputan kosong
+                } else { 
+                    cards.classList.remove('hidden'); 
+                    empty.classList.add('hidden'); 
+                    let inc = 0, exp = 0; 
+                    filtered.forEach(t => { if (t.type === 'income') inc += t.amount; else exp += t.amount; }); 
+                    
+                    document.getElementById('total-income').innerText = `+ ${formatRupiah(inc)}`; 
+                    document.getElementById('total-expense').innerText = `- ${formatRupiah(exp)}`; 
+                    document.getElementById('total-balance').innerText = formatRupiah(inc - exp); 
+                    document.getElementById('total-balance').className = `text-3xl font-bold font-mono transition-colors ${inc - exp >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-500'}`; 
+                    
+                    triggerAIInsight(inc, exp); // Panggil AI dengan data terbaru
+                } 
+                cards.style.opacity = 1;
             }, 150);
         }
 
@@ -767,7 +1371,8 @@
             }; reader.readAsDataURL(file);
         }
 
-        function addEmptyRow() { addRowData('', '', 'pcs', ''); }
+        // Qty otomatis bernilai "1" sesuai request
+        function addEmptyRow() { addRowData('', '1', 'pcs', ''); }
         function addRowData(name, qty, unit, price) {
             const container = document.getElementById('items-container'); const rowId = 'row-' + generateID(); const row = document.createElement('div'); row.id = rowId;
             row.className = `item-row bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200 dark:border-gray-700 relative list-enter shadow-sm`;
@@ -832,7 +1437,11 @@
             const listEl = document.getElementById('transaction-list'); listEl.innerHTML = '';
             if (transactions.length === 0) { listEl.innerHTML = '<div class="text-center text-gray-500 mt-10 text-sm italic">Tidak ada transaksi.</div>'; return; }
             
-            transactions.forEach(trx => {
+            // Batasi tampilan hanya 5 transaksi teratas agar super ringan
+            const limit = 5;
+            const trxToRender = transactions.slice(0, limit);
+
+            trxToRender.forEach(trx => {
                 const isInc = trx.type === 'income'; 
                 const colorClass = isInc ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                 
@@ -890,6 +1499,14 @@
                 
                 listEl.appendChild(el);
             });
+
+            // Tambahkan tulisan indikator di bawah list
+            if (transactions.length > limit) {
+                const footerEl = document.createElement('div');
+                footerEl.className = 'text-center text-xs text-gray-400 mt-4 italic';
+                footerEl.innerText = `Menampilkan ${limit} transaksi terbaru (dari total ${transactions.length} data) agar UI tetap ringan.`;
+                listEl.appendChild(footerEl);
+            }
         }
 
         // ==========================================
@@ -941,9 +1558,18 @@
                     </div>
                 </div>`;
             }
-                
+            
+            // Tambahkan Tombol Download Kuitansi    
             if(trx.receipt) {
-                html += `<img src="${trx.receipt}" class="w-full h-auto object-contain bg-gray-100 rounded mt-3">`;
+                html += `
+                <div class="mt-3 bg-gray-50 dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-2"><i class="fas fa-camera mr-1"></i> Foto Struk/Kuitansi</p>
+                    <img src="${trx.receipt}" class="w-full h-auto max-h-48 object-cover bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 cursor-pointer" onclick="window.open('${trx.receipt}', '_blank')">
+                    
+                    <a href="${trx.receipt}" download="Kuitansi_Gurmie_${trx.id}.jpg" class="mt-3 flex items-center justify-center w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold transition shadow-sm gap-2">
+                        <i class="fas fa-download text-sm"></i> Download Foto Kuitansi
+                    </a>
+                </div>`;
             }
             
             // Tambahan: Tombol Aksi di Bawah Detail Modal
@@ -962,7 +1588,7 @@
             const trx = transactions.find(t => String(t.id) === String(id)); if(!trx) return;
             document.getElementById('edit-id').value = trx.id; document.querySelector(`input[name="type"][value="${trx.type}"]`).checked = true; toggleFormMode(); document.getElementById('date').value = trx.date; document.getElementById('note').value = trx.note;
             
-            if (trx.type === 'income') { document.getElementById('nominal-input').value = trx.amount; } else {
+            if (trx.type === 'income') { document.getElementById('nominal-input').value = new Intl.NumberFormat('id-ID').format(trx.amount); } else {
                 document.getElementById('items-container').innerHTML = ''; if(trx.items) trx.items.forEach(it => addRowData(it.name, it.qty, it.unit, it.price)); 
                 if (trx.reimburse && trx.reimburse.active) { document.getElementById('use-personal-money').checked = true; toggleReimburseFields(); /* simplified logic for brevity in this output */ } else { document.getElementById('use-personal-money').checked = false; toggleReimburseFields(); }
             }
@@ -970,13 +1596,13 @@
             document.getElementById('cancel-edit-btn').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function cancelEdit() { document.getElementById('transaction-form').reset(); document.getElementById('edit-id').value = ''; document.getElementById('date').valueAsDate = new Date(); document.getElementById('items-container').innerHTML = ''; addRowData('', '', 'pcs', ''); document.querySelector('input[name="type"][value="expense"]').checked = true; toggleFormMode(); toggleReimburseFields(); document.getElementById('cancel-edit-btn').classList.add('hidden'); removeReceipt(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function cancelEdit() { document.getElementById('transaction-form').reset(); document.getElementById('edit-id').value = ''; document.getElementById('date').valueAsDate = new Date(); document.getElementById('items-container').innerHTML = ''; addRowData('', '1', 'pcs', ''); document.querySelector('input[name="type"][value="expense"]').checked = true; toggleFormMode(); toggleReimburseFields(); document.getElementById('cancel-edit-btn').classList.add('hidden'); removeReceipt(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         
         function init() { 
             transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); 
             renderList(); 
             handleDashFilterChange(); 
-            // Pastikan tab admin langsung ke-refresh jika modal admin sedang terbuka
+            // Pastikan tab admin langsung ke-refresh jika modal admin sedang terbukaa
             if(document.getElementById('settings-modal').classList.contains('active')) {
                 renderReimburseAdminList();
             }
@@ -1064,30 +1690,42 @@
 
         function updateAnalytics() {
             const filterVal = document.getElementById('analytic-filter').value;
-            const now = new Date();
+            const customDatesContainer = document.getElementById('ana-custom-dates');
+            let now = new Date();
             now.setHours(23, 59, 59, 999);
             let startDate = new Date();
             startDate.setHours(0, 0, 0, 0);
+            let endDate = new Date(now);
 
-            if (filterVal === 'today') {
-                // startDate is already today 00:00
-            } else if (filterVal === '3days') {
-                startDate.setDate(now.getDate() - 2);
-            } else if (filterVal === '7days') {
-                startDate.setDate(now.getDate() - 6);
-            } else if (filterVal === 'month') {
-                startDate.setDate(1); 
-            } else if (filterVal === 'year') {
-                startDate.setMonth(0, 1); 
+            if (filterVal === 'custom') {
+                customDatesContainer.classList.remove('hidden');
+                const sVal = document.getElementById('ana-start-date').value;
+                const eVal = document.getElementById('ana-end-date').value;
+                
+                if (sVal) { startDate = new Date(sVal + 'T00:00:00'); } else { startDate = new Date(2000, 0, 1); }
+                if (eVal) { endDate = new Date(eVal + 'T23:59:59'); } else { endDate = new Date(now); }
             } else {
-                startDate = new Date(2000, 0, 1); 
+                customDatesContainer.classList.add('hidden');
+                if (filterVal === 'today') {
+                    // startDate is already today 00:00
+                } else if (filterVal === '3days') {
+                    startDate.setDate(now.getDate() - 2);
+                } else if (filterVal === '7days') {
+                    startDate.setDate(now.getDate() - 6);
+                } else if (filterVal === 'month') {
+                    startDate.setDate(1); 
+                } else if (filterVal === 'year') {
+                    startDate.setMonth(0, 1); 
+                } else {
+                    startDate = new Date(2000, 0, 1); 
+                }
             }
 
             filteredAnalyticData = transactions.filter(t => {
                 // Konversi aman format ISO ke Date JS lokal
                 const tDateStr = t.date.includes('T') ? t.date : t.date + 'T00:00:00';
                 const tDate = new Date(tDateStr);
-                return tDate >= startDate && tDate <= now;
+                return tDate >= startDate && tDate <= endDate;
             });
 
             let inc = 0, exp = 0;
