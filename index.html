@@ -544,7 +544,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // --- KONFIGURASI VERSI & API ---
-        const APP_VERSION = "2.9.8"; // Versi diupdate ke 2.9.8 (Bulk Sync Server Link Update)
+        const APP_VERSION = "2.9.9"; // Tambahan fitur Tampilkan Semua Riwayat & Fix Bug
         const API_URL = "https://script.google.com/macros/s/AKfycbwk0H3zEFFjBZxUE-vPSTpmtcjWcb1FOMSIGa4YRnElp24zgB8-kjN4646fL6EtSLQc/exec"; 
 
         let transactions = []; 
@@ -555,6 +555,7 @@
         let analyticChart = null;
         let filteredAnalyticData = [];
         let lastInsightData = { inc: -1, exp: -1 }; // Untuk mencegah spam API AI
+        let showAllHistory = false; // Toggle untuk melihat semua history
 
         async function nukeBrowserCaches() {
             console.log("Memulai penghancuran cache...");
@@ -1438,9 +1439,9 @@
             const listEl = document.getElementById('transaction-list'); listEl.innerHTML = '';
             if (transactions.length === 0) { listEl.innerHTML = '<div class="text-center text-gray-500 mt-10 text-sm italic">Tidak ada transaksi.</div>'; return; }
             
-            // Batasi tampilan hanya 5 transaksi teratas agar super ringan
+            // Batasi tampilan hanya 5 transaksi teratas agar super ringan (bisa di-toggle)
             const limit = 5;
-            const trxToRender = transactions.slice(0, limit);
+            const trxToRender = showAllHistory ? transactions : transactions.slice(0, limit);
 
             trxToRender.forEach(trx => {
                 const isInc = trx.type === 'income'; 
@@ -1501,13 +1502,32 @@
                 listEl.appendChild(el);
             });
 
-            // Tambahkan tulisan indikator di bawah list
+            // Tambahkan tulisan indikator & Tombol Tampilkan Semua
             if (transactions.length > limit) {
                 const footerEl = document.createElement('div');
-                footerEl.className = 'text-center text-xs text-gray-400 mt-4 italic';
-                footerEl.innerText = `Menampilkan ${limit} transaksi terbaru (dari total ${transactions.length} data) agar UI tetap ringan.`;
+                footerEl.className = 'text-center mt-4';
+                
+                if (!showAllHistory) {
+                    footerEl.innerHTML = `
+                        <p class="text-xs text-gray-400 italic mb-3">Menampilkan ${limit} transaksi terbaru (dari total ${transactions.length} data) agar UI tetap ringan.</p>
+                        <button onclick="toggleHistory()" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold py-3 rounded-xl transition shadow-sm border border-gray-200 dark:border-gray-700 flex justify-center items-center gap-2">
+                            Lihat Semua Riwayat <i class="fas fa-chevron-down"></i>
+                        </button>
+                    `;
+                } else {
+                    footerEl.innerHTML = `
+                        <button onclick="toggleHistory()" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold py-3 rounded-xl transition shadow-sm border border-gray-200 dark:border-gray-700 flex justify-center items-center gap-2">
+                            Tampilkan Lebih Sedikit <i class="fas fa-chevron-up"></i>
+                        </button>
+                    `;
+                }
                 listEl.appendChild(footerEl);
             }
+        }
+
+        function toggleHistory() {
+            showAllHistory = !showAllHistory;
+            renderList();
         }
 
         // ==========================================
@@ -1862,7 +1882,7 @@
             // Buat Worksheet & Workbook
             const worksheet = XLSX.utils.json_to_sheet(excelRows);
             const workbook = XLSX.utils.book_new();
-            XLS.utils.book_append_sheet(workbook, worksheet, "Laporan Transaksi");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Transaksi");
 
             // Atur lebar kolom agar rapi
             const colWidths = [
